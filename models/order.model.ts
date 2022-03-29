@@ -1,20 +1,24 @@
 import * as mongoose from "mongoose";
 import {Schema, Document} from 'mongoose';
 
-export interface RoleProps {
+export interface OrderProps {
     _id: string;
-    name: string;
+    userId:string;
     accessList: string[];
-    parent: string|RoleProps;
+    parent: string|OrderProps;
 }
 
-export type RoleDocument = RoleProps & Document;
+export type OrderDocument = OrderProps & Document;
 
-const roleSchema = new Schema({
+const orderSchema = new Schema({
     name: {
         type: Schema.Types.String,
         required: true,
         unique: true
+    },
+    userId:{
+        type:Schema.Types.String,
+        required:true
     },
     accessList: [{
         type: Schema.Types.String,
@@ -22,10 +26,10 @@ const roleSchema = new Schema({
     }],
     parent: {
         type: Schema.Types.ObjectId,
-        ref: "Role"
+        ref: "Order"
     }
 }, {
     versionKey: false
 });
 
-export const RoleModel = mongoose.model<RoleDocument>("Role", roleSchema);
+export const OrderModel = mongoose.model<OrderDocument>("Order", orderSchema);
