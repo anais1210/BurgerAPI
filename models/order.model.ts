@@ -1,35 +1,37 @@
 import * as mongoose from "mongoose";
 import {Schema, Document} from 'mongoose';
+import { BurgerDocument} from "./burger.model";
 
 export interface OrderProps {
     _id: string;
-    userId:string;
-    accessList: string[];
-    parent: string|OrderProps;
+    foods: BurgerDocument[]
+    number:Number;
+    date:Date;
+    price:Number;
 }
 
 export type OrderDocument = OrderProps & Document;
 
-const orderSchema = new Schema({
-    name: {
-        type: Schema.Types.String,
-        required: true,
-        unique: true
-    },
-    userId:{
-        type:Schema.Types.String,
-        required:true
-    },
-    accessList: [{
-        type: Schema.Types.String,
+const OrderSchema = new Schema({
+    foods:[{
+        type: Schema.Types.ObjectId,
+        ref:'Burger',
         required: true,
     }],
-    parent: {
-        type: Schema.Types.ObjectId,
-        ref: "Order"
-    }
+    number:{
+        type:Schema.Types.Number,
+        unique:true
+    },
+    date:{
+        type: Schema.Types.Date,
+        unique:true
+    },
+    price:{
+        type: Schema.Types.Number,
+        unique:true
+    },
 }, {
     versionKey: false
 });
 
-export const OrderModel = mongoose.model<OrderDocument>("Order", orderSchema);
+export const OrderModel = mongoose.model<OrderDocument>("Order", OrderSchema);
