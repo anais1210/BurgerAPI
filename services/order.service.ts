@@ -1,6 +1,9 @@
 import { BurgerProps, OrderDocument, OrderModel, OrderProps } from "../models";
 import {Types, FilterQuery} from 'mongoose';
 import { ApiErrorCode } from "../api-error-code.enum";
+import {BurgerService} from "./burger.service";
+import {IngredientService, IngredientUpdate} from "./ingredient.service";
+import {Util} from "../utils";
 
 export class OrderService{
 
@@ -23,11 +26,41 @@ export class OrderService{
         }
         return order;
     }
-    async createOrder(create: OrderCreate):Promise<OrderDocument | ApiErrorCode>{
+
+    async getPrice(foods:any): Promise<number>{
+        let total  = 0;
+        for (const food of foods) {
+            const burger = await BurgerService.getInstance().getBurgerById(food)
+            if(burger !== null){
+                total += burger.price
+            }
+        }
+        return total;
+    }
+    async updateQuantity(foods:string[]):Promise<void>{
+        let id: string;
+        for(id of foods ){
+            const burger = await BurgerService.getInstance().getBurgerById(id)
+            const ingredients = JSON.parse(JSON.stringify(burger.products))
+            for (const ingredient of ingredients) {
+                const quantityBefore = await IngredientService.getInstance().getIngredientById(ingredient['ingredient'])
+                const newQuantity:IngredientUpdate = {quantity:quantityBefore['quantity'] - ingredient['quantity']};
+                await IngredientService.getInstance().updateIngredient(ingredient['ingredient'], newQuantity);
+            }
+        }
+    }
+    async createOrder(foods:string[] ):Promise<OrderDocument | ApiErrorCode>{
         try {
-        const model = new OrderModel(create);
-        const order = await model.save();
-        return order;
+            const order = {
+                foods: foods,
+                number: Util.generateNumber(),
+                date: new Date(),
+                price: await this.getPrice(foods),
+                status: false,
+            }
+            const model = new OrderModel(order);
+            await this.updateQuantity(foods)
+            return await model.save();
         } catch(err) {
             return ApiErrorCode.invalidParameters;
         }

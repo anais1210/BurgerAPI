@@ -33,7 +33,9 @@ const OrderSchema = new Schema({
         type: Schema.Types.Boolean
     },
 }, {
-    versionKey: false
+    versionKey: false,
+    collection:"orders",
+    timestamps:true
 });
 
 export const OrderModel = mongoose.model<OrderDocument>("Order", OrderSchema);

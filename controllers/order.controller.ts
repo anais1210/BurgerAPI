@@ -4,7 +4,7 @@ import { OrderDocument, OrderModel } from '../models';
 import { OrderService } from '../services/order.service';
 import { ApiErrorCode } from '../api-error-code.enum';
 import { Util } from '../utils';
-import { BurgerService } from '../services';
+import { BurgerService, IngredientService, IngredientUpdate } from '../services';
 
 export class OrderController{
 
@@ -45,31 +45,8 @@ export class OrderController{
         }
         res.json(result);
     }
-    async getPrice(data:any): Promise<number>{
-        let total  = 0;
-        for (const food of data.foods) { 
-            const burger = await BurgerService.getInstance().getBurgerById(food) 
-            if(burger !== null){
-                total += burger.price 
-            }
-          }
-        return total;
-    }
-
     async createOrder(req:express.Request, res:express.Response){
-        const data = req.body;
-        const order = {
-            foods: data.foods,
-            number: Util.generateNumber(),
-            date: new Date(),
-            price: await this.getPrice(data),
-            status: false,
-        }
-        console.log(order);
-        
-        const result = await OrderService.getInstance().createOrder(order);
-        console.log(result);
-        
+        const result = await OrderService.getInstance().createOrder(req.body.foods);
         if(result === ApiErrorCode.alreadyExists) {
             return res.status(409).end();
         }
@@ -105,7 +82,7 @@ export class OrderController{
 
     buildRouter():express.Router{
         const router = express.Router() // création d'un nouveau router
-        router.post("/createOrder", this.createOrder.bind(this));
+        router.post("/createOrder", express.json(),this.createOrder.bind(this));
         router.get("/:id", this.getOrderById.bind(this));
         router.delete("/:id", this.deleteOrder.bind(this));
         router.patch("/:id", this.updateOrder.bind(this));
