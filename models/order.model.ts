@@ -4,10 +4,11 @@ import { BurgerDocument} from "./burger.model";
 
 export interface OrderProps {
     _id: string;
-    foods: BurgerDocument[]
-    number:Number;
+    foods: string[];
+    number:number;
     date:Date;
-    price:Number;
+    price: number;
+    status: boolean;
 }
 
 export type OrderDocument = OrderProps & Document;
@@ -23,12 +24,13 @@ const OrderSchema = new Schema({
         unique:true
     },
     date:{
-        type: Schema.Types.Date,
-        unique:true
+        type: Schema.Types.Date
     },
     price:{
-        type: Schema.Types.Number,
-        unique:true
+        type: Schema.Types.Number
+    },
+     status:{
+        type: Schema.Types.Boolean
     },
 }, {
     versionKey: false

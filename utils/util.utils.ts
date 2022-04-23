@@ -1,8 +1,7 @@
 export class Util {
 
-    public static generateNumber():Number{
-        let number = 0 
-        number++;
+    public static generateNumber():number{
+        const number = Math.floor(Math.random()*100)
         return number;
     }
 }

@@ -4,10 +4,10 @@ import { OrderDocument, OrderModel } from '../models';
 import { OrderService } from '../services/order.service';
 import { ApiErrorCode } from '../api-error-code.enum';
 import { Util } from '../utils';
+import { BurgerService } from '../services';
 
 export class OrderController{
 
-    // ------- design pattern singleton --> permet d'avoir une seule instance d'une classe max ----------
     private static instance: OrderController;
     public static getInstance(): OrderController{
         if (OrderController.instance === undefined){
@@ -33,7 +33,8 @@ export class OrderController{
             offset:offset
         });
         res.json(Orders);
-    }
+    }*/
+
     async getOrderById(req:express.Request, res:express.Response){
         const id = req.params.id;
         const result = await OrderService.getInstance().getOrderById(id);
@@ -43,33 +44,42 @@ export class OrderController{
             return res.status(400).end();
         }
         res.json(result);
-    }*/
-    async getPrice(req:express.Request, res:express.Response){
-        const data = req.body;
+    }
+    async getPrice(data:any): Promise<number>{
         let total  = 0;
-        for (const food of data.foods) {  
-            total += data.foods.price 
+        for (const food of data.foods) { 
+            const burger = await BurgerService.getInstance().getBurgerById(food) 
+            if(burger !== null){
+                total += burger.price 
+            }
           }
         return total;
-        
     }
 
     async createOrder(req:express.Request, res:express.Response){
         const data = req.body;
-        const result = await OrderService.getInstance().createOrder({
-            foods: [data.foods],
+        const order = {
+            foods: data.foods,
             number: Util.generateNumber(),
             date: new Date(),
-            price: Number(this.getPrice),
-        });
-
-        if(result === ApiErrorCode.alreadyExists) {
-            res.status(409).end(); // CONFLICT
-            return;
+            price: await this.getPrice(data),
+            status: false,
         }
-        res.json("result :" + data);
+        console.log(order);
+        
+        const result = await OrderService.getInstance().createOrder(order);
+        console.log(result);
+        
+        if(result === ApiErrorCode.alreadyExists) {
+            return res.status(409).end();
+        }
+        if(result === ApiErrorCode.invalidParameters) {
+            return res.status(400).end();
+        }
+        res.json();
     }
-    /*async deleteOrder(req:express.Request, res:express.Response){;
+
+    async deleteOrder(req:express.Request, res:express.Response){;
         const id = req.params.id;
         const result = await OrderService.getInstance().deleteOrder(id);
         if(result === ApiErrorCode.notFound){;
@@ -80,26 +90,29 @@ export class OrderController{
         res.status(204).end();
     };
 
-    async updateOrder(req:express.Request, res:express.Response){;
+    async updateOrder(req: express.Request, res: express.Response) {
         const id = req.params.id;
         const data = req.body;
-        const result = await OrderService.getInstance().updateOrder(id, data);
-        if(result === ApiErrorCode.notFound){;
+        const result = await OrderService.getInstance().updateOrder(id,data);
+        if(result === ApiErrorCode.notFound) {
             return res.status(404).end();
-        }else if (result === ApiErrorCode.invalidParameters){;
+        }
+        if(result === ApiErrorCode.invalidParameters) {
             return res.status(400).end();
-        };
+        }
         res.json(result);
-    };*/
+    }
 
     buildRouter():express.Router{
         const router = express.Router() // création d'un nouveau router
-            router.post("/createOrder", this.createOrder.bind(this)); 
-           /* router.get("/", this.searchOrder.bind(this)); // bind permet de ne pas perdre le "this" 
-            router.get("/:id", this.getOrderById.bind(this)); 
-            router.delete("/:id",this.deleteOrder.bind(this)); 
-            router.patch("/:id",this.updateOrder.bind(this)); 
-            */
+        router.post("/createOrder", this.createOrder.bind(this));
+        router.get("/:id", this.getOrderById.bind(this));
+        router.delete("/:id", this.deleteOrder.bind(this));
+        router.patch("/:id", this.updateOrder.bind(this));
+        
+        /* router.get("/", this.searchOrder.bind(this)); // bind permet de ne pas perdre le "this"
+         router.patch("/:id",this.updateOrder.bind(this));
+        */
             return router;
             
     }

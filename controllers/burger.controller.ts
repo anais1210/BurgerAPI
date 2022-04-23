@@ -44,10 +44,10 @@ export class BurgerController {
     async getBurgerById(req: express.Request, res: express.Response){
         const id = req.params.id;
         const result = await BurgerService.getInstance().getBurgerById(id);
-        if(result === ApiErrorCode.notFound) {
+        if(result === null) {
             return res.status(404).end();
         }
-        if(result === ApiErrorCode.invalidParameters) {
+        if(result === null) {
             return res.status(400).end();
         }
         res.json(result);

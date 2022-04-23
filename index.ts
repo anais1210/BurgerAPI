@@ -4,7 +4,7 @@ config(); //Permet de charger les variables d'environnement
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
-import {BurgerController, DrinkController, IngredientController} from "./controllers";
+import {BurgerController, DrinkController, IngredientController,  OrderController} from "./controllers";
 import {IngredientModel} from "./models";
 import {Mongoose} from "mongoose";
 
@@ -25,6 +25,7 @@ async function startServer(): Promise<void> {
     app.use('/ingredient', IngredientController.getInstance().buildRouter());
     app.use('/burger', BurgerController.getInstance().buildRouter());
     app.use('/drink', DrinkController.getInstance().buildRouter());
+    app.use('/order', OrderController.getInstance().buildRouter());
 
     //Pour récupérer les variables d'env, il faut utiliser process.env.VARIABLE
     app.listen(process.env.PORT, function(){
