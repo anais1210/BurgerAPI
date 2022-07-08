@@ -1,56 +1,52 @@
 import * as express from "express";
-import { FilterQuery, Schema, Types } from "mongoose";
-import { BurgerDocument, BurgerModel } from "../models";
-import { BurgerService } from "../services";
+import { SnackService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
  */
 
-export class BurgerController {
+export class SnackController {
   // -- DESIGN PATTERN SINGLETON
   //Permet d'avoir une seule instance d'une classe au maximum
-  private static instance: BurgerController;
+  private static instance: SnackController;
 
-  public static getInstance(): BurgerController {
-    if (BurgerController.instance === undefined) {
-      BurgerController.instance = new BurgerController();
+  public static getInstance(): SnackController {
+    if (SnackController.instance === undefined) {
+      SnackController.instance = new SnackController();
     }
-    return BurgerController.instance;
+    return SnackController.instance;
   }
 
   private constructor() {}
   // -------
 
-  async searchBurger(req: express.Request, res: express.Response) {
+  async searchSnack(req: express.Request, res: express.Response) {
     const limit = req.query.limit
       ? Number.parseInt(req.query.limit as string)
       : 20; //number
     const offset = req.query.offset
       ? Number.parseInt(req.query.offset as string)
       : 0; // number
-    const availability = req.query.availability
-      ? req.query.availability === "true"
-      : undefined; // number
     const price = req.query.price
       ? Number.parseInt(req.query.price as string)
       : undefined; // number
-    console.log("Fichier controller , ingredient :" + req.query.ingredient);
-    const burgers = await BurgerService.getInstance().searchBurgers({
+    const availability = req.query.availability
+      ? req.query.availability === "true"
+      : undefined; // number
+    const snacks = await SnackService.getInstance().searchSnacks({
       name: req.query.name as string,
-      availability: availability,
       price: price,
-      ingredient: req.query.ingredient as string,
+      availability: availability,
       limit: limit,
       offset: offset,
     });
-    res.json(burgers);
+    res.json(snacks);
   }
 
-  async getBurgerById(req: express.Request, res: express.Response) {
+  async getSnackById(req: express.Request, res: express.Response) {
     const id = req.params.id;
-    const result = await BurgerService.getInstance().getBurgerById(id);
+    const result = await SnackService.getInstance().getSnackById(id);
     if (result === ApiErrorCode.notFound) {
       return res.status(404).end();
     }
@@ -60,19 +56,18 @@ export class BurgerController {
     res.json(result);
   }
 
-  async createBurger(req: express.Request, res: express.Response) {
+  async createSnack(req: express.Request, res: express.Response) {
     const data = req.body;
-    const result = await BurgerService.getInstance().createBurger(data);
-    console.log(result);
+    const result = await SnackService.getInstance().createSnack(data);
     if (result === ApiErrorCode.invalidParameters) {
       return res.status(400).end();
     }
     res.json(result);
   }
 
-  async deleteBurger(req: express.Request, res: express.Response) {
+  async deleteSnack(req: express.Request, res: express.Response) {
     const id = req.params.id;
-    const result = await BurgerService.getInstance().deleteBurger(id);
+    const result = await SnackService.getInstance().deleteSnack(id);
     if (result === ApiErrorCode.notFound) {
       return res.status(404).end();
     }
@@ -82,10 +77,10 @@ export class BurgerController {
     res.status(204).end();
   }
 
-  async updateBurger(req: express.Request, res: express.Response) {
+  async updateSnack(req: express.Request, res: express.Response) {
     const id = req.params.id;
     const data = req.body;
-    const result = await BurgerService.getInstance().updateBurger(id, data);
+    const result = await SnackService.getInstance().updateSnack(id, data);
     if (result === ApiErrorCode.notFound) {
       return res.status(404).end();
     }
@@ -97,11 +92,11 @@ export class BurgerController {
 
   buildRouter(): express.Router {
     const router = express.Router(); //création d'un nouveau routeur
-    router.get("/", this.searchBurger.bind(this));
-    router.get("/:id", this.getBurgerById.bind(this));
-    router.post("/", this.createBurger.bind(this));
-    router.delete("/:id", this.deleteBurger.bind(this));
-    router.patch("/:id", this.updateBurger.bind(this));
+    router.get("/", this.searchSnack.bind(this));
+    router.get("/:id", this.getSnackById.bind(this));
+    router.post("/", this.createSnack.bind(this));
+    router.delete("/:id", this.deleteSnack.bind(this));
+    router.patch("/:id", this.updateSnack.bind(this));
     return router;
   }
 }

@@ -1,33 +1,33 @@
-import { DrinkDocument, DrinkModel } from "../models";
+import { SnackDocument, SnackModel } from "../models";
 import { FilterQuery, Types } from "mongoose";
 import { ApiErrorCode } from "../api-error-code.enum";
 
-export class DrinkService {
+export class SnackService {
   // Singleton
-  private static instance: DrinkService;
+  private static instance: SnackService;
   private constructor() {}
-  public static getInstance(): DrinkService {
-    if (DrinkService.instance === undefined) {
-      DrinkService.instance = new DrinkService();
+  public static getInstance(): SnackService {
+    if (SnackService.instance === undefined) {
+      SnackService.instance = new SnackService();
     }
-    return DrinkService.instance;
+    return SnackService.instance;
   }
 
-  async getDrinkById(id: string): Promise<DrinkDocument | ApiErrorCode> {
+  async getSnackById(id: string): Promise<SnackDocument | ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
     }
-    const drink = await DrinkModel.findById(id);
-    if (drink === null) {
+    const snack = await SnackModel.findById(id);
+    if (snack === null) {
       return ApiErrorCode.notFound;
     }
-    return drink;
+    return snack;
   }
 
-  async searchDrinks(
-    search: DrinkSearch
-  ): Promise<DrinkDocument[] | ApiErrorCode> {
-    const filter: FilterQuery<DrinkDocument> = {};
+  async searchSnacks(
+    search: SnackSearch
+  ): Promise<SnackDocument[] | ApiErrorCode> {
+    const filter: FilterQuery<SnackDocument> = {};
     if (search.name !== undefined) {
       filter.name = {
         $regex: search.name,
@@ -48,7 +48,7 @@ export class DrinkService {
       };
     }
 
-    const query = DrinkModel.find(filter);
+    const query = SnackModel.find(filter);
     if (search.limit !== undefined) {
       query.limit(search.limit);
     }
@@ -60,47 +60,47 @@ export class DrinkService {
     return query.exec();
   }
 
-  async createDrink(
-    create: DrinkCreate
-  ): Promise<DrinkDocument | ApiErrorCode> {
+  async createSnack(
+    create: SnackCreate
+  ): Promise<SnackDocument | ApiErrorCode> {
     try {
-      const model = new DrinkModel(create);
-      const drink = await model.save();
-      return drink;
+      const model = new SnackModel(create);
+      const snack = await model.save();
+      return snack;
     } catch (err) {
       return ApiErrorCode.invalidParameters;
     }
   }
 
-  async deleteDrink(id: string): Promise<ApiErrorCode> {
+  async deleteSnack(id: string): Promise<ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
     }
-    const drink = await DrinkModel.findByIdAndDelete(id);
-    if (drink === null) {
+    const Snack = await SnackModel.findByIdAndDelete(id);
+    if (Snack === null) {
       return ApiErrorCode.notFound;
     }
     return ApiErrorCode.success;
   }
 
-  async updateDrink(
+  async updateSnack(
     id: string,
-    update: DrinkUpdate
-  ): Promise<DrinkDocument | ApiErrorCode> {
+    update: SnackUpdate
+  ): Promise<SnackDocument | ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
     }
-    const drink = await DrinkModel.findByIdAndUpdate(id, update, {
+    const Snack = await SnackModel.findByIdAndUpdate(id, update, {
       returnDocument: "after",
     });
-    if (drink === null) {
+    if (Snack === null) {
       return ApiErrorCode.notFound;
     }
-    return drink;
+    return Snack;
   }
 }
 
-export interface DrinkSearch {
+export interface SnackSearch {
   readonly name?: string;
   readonly price?: number;
   readonly availability?: boolean;
@@ -108,13 +108,13 @@ export interface DrinkSearch {
   readonly offset?: number;
 }
 
-export interface DrinkCreate {
+export interface SnackCreate {
   readonly name: string;
   readonly price: number;
   readonly availability: boolean;
 }
 
-export interface DrinkUpdate {
+export interface SnackUpdate {
   readonly name?: string;
   readonly price?: number;
   readonly availability?: boolean;
