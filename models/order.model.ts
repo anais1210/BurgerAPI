@@ -8,8 +8,8 @@ export interface OrderProps {
   date: Date;
   price: number;
   menu: string;
-  status: boolean;
   promo: string;
+  status: boolean;
 }
 
 export type OrderDocument = OrderProps & Document;
@@ -40,16 +40,16 @@ const OrderSchema = new Schema(
     price: {
       type: Schema.Types.Number,
     },
+    status: {
+      type: Schema.Types.Boolean,
+    },
     menu: {
       type: Schema.Types.String,
       ref: "Menu",
     },
-    status: {
-      type: Schema.Types.Boolean,
-    },
     promo: {
-      type: Schema.Types.ObjectId,
-      ref: "Promos",
+      type: Schema.Types.String,
+      ref: "Promo",
     },
   },
   {

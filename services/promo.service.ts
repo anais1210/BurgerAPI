@@ -25,6 +25,20 @@ export class PromoService {
     return promo;
   }
 
+  async getPromoByName(name: string): Promise<PromoDocument | ApiErrorCode> {
+    if (typeof name !== "string") {
+      return ApiErrorCode.invalidParameters;
+    }
+    const promo = await PromoModel.findOne({
+      name: name,
+    });
+    if (promo === null) {
+      return ApiErrorCode.notFound;
+    }
+    console.log(promo.percent);
+    return promo.percent;
+  }
+
   async searchPromos(
     search: PromoSearch
   ): Promise<PromoDocument[] | ApiErrorCode> {

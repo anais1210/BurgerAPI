@@ -35,7 +35,6 @@ export class IngredientService {
     const ingredient = await IngredientModel.findOne({
       name: name,
     });
-    console.log("zizi : " + ingredient);
     if (ingredient === null) {
       return ApiErrorCode.notFound;
     }
