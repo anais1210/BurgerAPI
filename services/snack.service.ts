@@ -13,15 +13,15 @@ export class SnackService {
     return SnackService.instance;
   }
 
-  async getSnackById(id: string): Promise<SnackDocument | ApiErrorCode> {
+  async getSnackById(id: string): Promise<SnackDocument | null> {
     if (!Types.ObjectId.isValid(id)) {
-      return ApiErrorCode.invalidParameters;
+      return null;
     }
-    const snack = await SnackModel.findById(id);
-    if (snack === null) {
-      return ApiErrorCode.notFound;
+    const Snack = await SnackModel.findById(id);
+    if (Snack === null) {
+      return null;
     }
-    return snack;
+    return Snack;
   }
 
   async searchSnacks(
@@ -41,13 +41,6 @@ export class SnackService {
       };
     }
 
-    if (search.availability !== undefined) {
-      const testBool = search.availability.toString() === "true" ? false : true;
-      filter.availability = {
-        $ne: testBool,
-      };
-    }
-
     const query = SnackModel.find(filter);
     if (search.limit !== undefined) {
       query.limit(search.limit);
@@ -56,7 +49,6 @@ export class SnackService {
     if (search.offset !== undefined) {
       query.skip(search.offset);
     }
-
     return query.exec();
   }
 
@@ -65,8 +57,8 @@ export class SnackService {
   ): Promise<SnackDocument | ApiErrorCode> {
     try {
       const model = new SnackModel(create);
-      const snack = await model.save();
-      return snack;
+      const Snack = await model.save();
+      return Snack;
     } catch (err) {
       return ApiErrorCode.invalidParameters;
     }
@@ -103,7 +95,6 @@ export class SnackService {
 export interface SnackSearch {
   readonly name?: string;
   readonly price?: number;
-  readonly availability?: boolean;
   readonly limit?: number;
   readonly offset?: number;
 }
@@ -111,11 +102,11 @@ export interface SnackSearch {
 export interface SnackCreate {
   readonly name: string;
   readonly price: number;
-  readonly availability: boolean;
+  readonly quantity: number;
 }
 
 export interface SnackUpdate {
   readonly name?: string;
   readonly price?: number;
-  readonly availability?: boolean;
+  readonly quantity?: number;
 }

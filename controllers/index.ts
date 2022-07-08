@@ -4,3 +4,6 @@ export * from "./drink.controller";
 export * from "./order.controller";
 export * from "./snack.controller";
 export * from "./promo.controller";
+export * from "./menu.controller";
+export * from "./menu.controller";
+export * from "./auth.controller";

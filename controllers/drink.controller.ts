@@ -37,7 +37,6 @@ export class DrinkController {
     const drinks = await DrinkService.getInstance().searchDrinks({
       name: req.query.name as string,
       price: price,
-      availability: availability,
       limit: limit,
       offset: offset,
     });
@@ -47,10 +46,10 @@ export class DrinkController {
   async getDrinkById(req: express.Request, res: express.Response) {
     const id = req.params.id;
     const result = await DrinkService.getInstance().getDrinkById(id);
-    if (result === ApiErrorCode.notFound) {
+    if (result === null) {
       return res.status(404).end();
     }
-    if (result === ApiErrorCode.invalidParameters) {
+    if (result === null) {
       return res.status(400).end();
     }
     res.json(result);
@@ -61,6 +60,9 @@ export class DrinkController {
     const result = await DrinkService.getInstance().createDrink(data);
     if (result === ApiErrorCode.invalidParameters) {
       return res.status(400).end();
+    }
+    if (result === ApiErrorCode.alreadyExists) {
+      return res.status(409).end(); // CONFLICT
     }
     res.json(result);
   }

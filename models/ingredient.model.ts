@@ -16,6 +16,7 @@ const ingredientSchema = new Schema(
     name: {
       type: Schema.Types.String,
       required: true,
+      unique: true,
     },
     origin: {
       type: Schema.Types.String,

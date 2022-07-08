@@ -51,10 +51,10 @@ export class BurgerController {
   async getBurgerById(req: express.Request, res: express.Response) {
     const id = req.params.id;
     const result = await BurgerService.getInstance().getBurgerById(id);
-    if (result === ApiErrorCode.notFound) {
+    if (result === null) {
       return res.status(404).end();
     }
-    if (result === ApiErrorCode.invalidParameters) {
+    if (result === null) {
       return res.status(400).end();
     }
     res.json(result);
@@ -64,6 +64,9 @@ export class BurgerController {
     const data = req.body;
     const result = await BurgerService.getInstance().createBurger(data);
     console.log(result);
+    if (result === ApiErrorCode.alreadyExists) {
+      return res.status(409).end(); // CONFLICT
+    }
     if (result === ApiErrorCode.invalidParameters) {
       return res.status(400).end();
     }

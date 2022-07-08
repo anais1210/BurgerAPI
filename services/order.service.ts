@@ -1,9 +1,17 @@
-import { BurgerProps, OrderDocument, OrderModel, OrderProps } from "../models";
+import {
+  BurgerDocument,
+  BurgerProps,
+  OrderDocument,
+  OrderModel,
+  OrderProps,
+} from "../models";
 import { Types, FilterQuery } from "mongoose";
 import { ApiErrorCode } from "../api-error-code.enum";
 import { BurgerService } from "./burger.service";
 import { IngredientService, IngredientUpdate } from "./ingredient.service";
 import { Util } from "../utils";
+import { SnackService, SnackUpdate } from "./snack.service";
+import { DrinkService, DrinkUpdate } from "./drink.service";
 
 export class OrderService {
   private static instance: OrderService;
@@ -65,8 +73,11 @@ export class OrderService {
     let total = 0;
     for (const food of foods) {
       const burger = await BurgerService.getInstance().getBurgerById(food);
-      if (burger !== null) {
-        total += burger.price;
+      const drink = await DrinkService.getInstance().getDrinkById(food);
+      const snack = await SnackService.getInstance().getSnackById(food);
+
+      if (burger !== null || drink !== null || snack !== null) {
+        total += burger.price + drink.price + snack.price;
       }
     }
     return total;
@@ -76,6 +87,8 @@ export class OrderService {
     let id: string;
     for (id of foods) {
       const burger = await BurgerService.getInstance().getBurgerById(id);
+      // const drink = await DrinkService.getInstance().getDrinkById(id);
+      // const snack = await SnackService.getInstance().getSnackById(id);
       const ingredients = JSON.parse(JSON.stringify(burger.products));
       for (const ingredient of ingredients) {
         const quantityBefore =
@@ -90,6 +103,20 @@ export class OrderService {
           newQuantity
         );
       }
+      // const newQuantityDrink: DrinkUpdate = {
+      //   quantity: drink["quantity"] - 1,
+      // };
+      // await DrinkService.getInstance().updateDrink(
+      //   drink["id"],
+      //   newQuantityDrink
+      // );
+      // const newQuantitySnack: SnackUpdate = {
+      //   quantity: snack["quantity"] - 1,
+      // };
+      // await SnackService.getInstance().updateSnack(
+      //   snack["id"],
+      //   newQuantitySnack
+      // );
     }
   }
   async createOrder(foods: string[]): Promise<OrderDocument | ApiErrorCode> {
@@ -108,16 +135,7 @@ export class OrderService {
       return ApiErrorCode.invalidParameters;
     }
   }
-  async getOrderByName(number: string): Promise<OrderDocument | ApiErrorCode> {
-    if (!Types.ObjectId.isValid(number)) {
-      return ApiErrorCode.invalidParameters;
-    }
-    const order = await OrderModel.findOne({ number });
-    if (order === null) {
-      return ApiErrorCode.notFound;
-    }
-    return order;
-  }
+
   async deleteOrder(id: string): Promise<ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
@@ -127,21 +145,6 @@ export class OrderService {
       return ApiErrorCode.notFound;
     }
     return ApiErrorCode.success;
-  }
-  async updateOrder(
-    id: string,
-    update: OrderUpdate
-  ): Promise<OrderDocument | ApiErrorCode> {
-    if (!Types.ObjectId.isValid(id)) {
-      return ApiErrorCode.invalidParameters;
-    }
-    const burger = await OrderModel.findByIdAndUpdate(id, update, {
-      returnDocument: "after",
-    });
-    if (burger === null) {
-      return ApiErrorCode.notFound;
-    }
-    return burger;
   }
 }
 

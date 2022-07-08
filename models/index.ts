@@ -6,3 +6,4 @@ export * from "./burger.model";
 export * from "./ingredient.model";
 export * from "./drink.model";
 export * from "./snack.model";
+export * from "./menu.model";

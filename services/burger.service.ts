@@ -14,13 +14,13 @@ export class BurgerService {
     return BurgerService.instance;
   }
 
-  async getBurgerById(id: string): Promise<BurgerDocument | ApiErrorCode> {
+  async getBurgerById(id: string): Promise<BurgerDocument | null> {
     if (!Types.ObjectId.isValid(id)) {
-      return ApiErrorCode.invalidParameters;
+      return null;
     }
     const burger = await BurgerModel.findById(id);
     if (burger === null) {
-      return ApiErrorCode.notFound;
+      return null;
     }
     return burger;
   }

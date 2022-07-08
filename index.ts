@@ -1,18 +1,20 @@
 import { config } from "dotenv";
-config(); //Permet de charger les variables d'environnement
+config(); // Permet de charger les variables d'environnement
 
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as mongoose from "mongoose";
 import {
+  AuthController,
   BurgerController,
   DrinkController,
   IngredientController,
+  MenuController,
   OrderController,
-  PromoController,
   SnackController,
 } from "./controllers";
 import { RoleService } from "./services";
+import { PromoController } from "./controllers/promo.controller";
 
 async function startServer(): Promise<void> {
   await mongoose.connect(process.env.MONGO_URI, {
@@ -21,22 +23,17 @@ async function startServer(): Promise<void> {
       password: process.env.MONGO_PASSWORD,
     },
   });
-
   const app = express();
-
-  //Permet de lire les body de requete en JSON
   app.use(bodyParser.json());
-
-  //Permet d'enregistrer un controlleur qui est dans un autre fichier dans le serveur express
   app.use("/ingredient", IngredientController.getInstance().buildRouter());
   app.use("/burger", BurgerController.getInstance().buildRouter());
   app.use("/drink", DrinkController.getInstance().buildRouter());
+  app.use("/menu", MenuController.getInstance().buildRouter());
   app.use("/order", OrderController.getInstance().buildRouter());
   app.use("/snack", SnackController.getInstance().buildRouter());
   app.use("/promo", PromoController.getInstance().buildRouter());
-
-  //Pour récupérer les variables d'env, il faut utiliser process.env.VARIABLE
-  app.listen(process.env.PORT, function () {
+  app.listen(process.env.PORT, async function () {
+    await bootstrap();
     console.log("Server started on port " + process.env.PORT);
   });
 }
@@ -87,7 +84,5 @@ async function bootstrap(): Promise<void> {
     ]);
   }
 }
-
-startServer();
 
 startServer();

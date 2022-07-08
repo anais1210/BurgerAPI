@@ -36,6 +36,7 @@ const burgerSchema = new Schema(
     },
     price: {
       type: Schema.Types.Number,
+      default: 0,
       required: true,
     },
     availability: {

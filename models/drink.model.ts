@@ -5,7 +5,7 @@ export interface DrinkProps {
   _id: string;
   name: string;
   price: number;
-  availability: number;
+  quantity: number;
 }
 
 export type DrinkDocument = DrinkProps & Document;
@@ -15,15 +15,17 @@ const drinkSchema = new Schema(
     name: {
       type: Schema.Types.String,
       required: true,
+      unique: true,
     },
     price: {
       type: Schema.Types.Number,
       required: true,
       default: 0,
     },
-    availability: {
-      type: Schema.Types.Boolean,
+    quantity: {
+      type: Schema.Types.Number,
       required: true,
+      default: 0,
     },
   },
   {

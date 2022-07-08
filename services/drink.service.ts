@@ -13,13 +13,13 @@ export class DrinkService {
     return DrinkService.instance;
   }
 
-  async getDrinkById(id: string): Promise<DrinkDocument | ApiErrorCode> {
+  async getDrinkById(id: string): Promise<DrinkDocument | null> {
     if (!Types.ObjectId.isValid(id)) {
-      return ApiErrorCode.invalidParameters;
+      return null;
     }
     const drink = await DrinkModel.findById(id);
     if (drink === null) {
-      return ApiErrorCode.notFound;
+      return null;
     }
     return drink;
   }
@@ -41,13 +41,6 @@ export class DrinkService {
       };
     }
 
-    if (search.availability !== undefined) {
-      const testBool = search.availability.toString() === "true" ? false : true;
-      filter.availability = {
-        $ne: testBool,
-      };
-    }
-
     const query = DrinkModel.find(filter);
     if (search.limit !== undefined) {
       query.limit(search.limit);
@@ -56,7 +49,6 @@ export class DrinkService {
     if (search.offset !== undefined) {
       query.skip(search.offset);
     }
-
     return query.exec();
   }
 
@@ -68,6 +60,7 @@ export class DrinkService {
       const drink = await model.save();
       return drink;
     } catch (err) {
+      console.log(create);
       return ApiErrorCode.invalidParameters;
     }
   }
@@ -103,7 +96,6 @@ export class DrinkService {
 export interface DrinkSearch {
   readonly name?: string;
   readonly price?: number;
-  readonly availability?: boolean;
   readonly limit?: number;
   readonly offset?: number;
 }
@@ -111,11 +103,11 @@ export interface DrinkSearch {
 export interface DrinkCreate {
   readonly name: string;
   readonly price: number;
-  readonly availability: boolean;
+  readonly quantity: number;
 }
 
 export interface DrinkUpdate {
   readonly name?: string;
   readonly price?: number;
-  readonly availability?: boolean;
+  readonly quantity?: number;
 }

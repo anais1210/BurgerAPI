@@ -5,23 +5,24 @@ export interface SnackProps {
   _id: string;
   name: string;
   price: number;
-  availability: number;
-  //un seul modèle "extra" + rajouter propriété type
+  quantity: number;
 }
 
 export type SnackDocument = SnackProps & Document;
 
-const snackSchema = new Schema(
+const SnackSchema = new Schema(
   {
     name: {
       type: Schema.Types.String,
       required: true,
-    },
-    availability: {
-      type: Schema.Types.Boolean,
-      required: true,
+      unique: true,
     },
     price: {
+      type: Schema.Types.Number,
+      required: true,
+      default: 0,
+    },
+    quantity: {
       type: Schema.Types.Number,
       required: true,
       default: 0,
@@ -32,4 +33,4 @@ const snackSchema = new Schema(
   }
 );
 
-export const SnackModel = mongoose.model<SnackDocument>("Drink", snackSchema);
+export const SnackModel = mongoose.model<SnackDocument>("Snack", SnackSchema);

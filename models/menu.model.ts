@@ -1,6 +1,5 @@
 import * as mongoose from "mongoose";
 import { Schema, Document } from "mongoose";
-import { BurgerDocument } from "./burger.model";
 
 export interface MenuProps {
   _id: string;
@@ -18,19 +17,23 @@ const MenuSchema = new Schema(
     name: {
       type: Schema.Types.String,
       required: true,
+      unique: true,
     },
     burger: {
-      type: Schema.Types.String,
+      type: Schema.Types.ObjectId,
+      ref: "Burger",
       required: true,
     },
-    drink: {
-      type: Schema.Types.String,
-      required: true,
-    },
-    snack: {
-      type: Schema.Types.String,
-      required: true,
-    },
+    // drink: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Drink",
+    //   required: true,
+    // },
+    // snack: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Snack",
+    //   required: true,
+    // },
     price: {
       type: Schema.Types.Number,
       required: true,
