@@ -5,6 +5,7 @@ import { BurgerService } from "./burger.service";
 import { IngredientService, IngredientUpdate } from "./ingredient.service";
 import { Util } from "../utils";
 import { PromoService } from "./promo.service";
+import { MenuService } from "./menu.service";
 
 export class OrderService {
   private static instance: OrderService;
@@ -73,22 +74,25 @@ export class OrderService {
     return Number(price);
   }
   async createOrder(
-    foods: string[],
-    promo: string
+    create: OrderCreate
   ): Promise<OrderDocument | ApiErrorCode> {
     try {
-      let price = await this.getPrice(foods);
-      const finalPrice = await this.verifyPromo(promo, price);
+      let price = await this.getPrice(create.foods);
+      const finalPrice = await this.verifyPromo(create.promo, price);
+      const menu = await MenuService.getInstance().getMenuByName(create.menu);
 
       const order = {
-        foods: foods,
+        foods: create.foods,
         number: Util.generateNumber(),
         date: new Date(),
-        promo: promo,
+        promo: create.promo,
         price: finalPrice,
+        menu: menu,
+        snack: create.snack,
+        drink: create.drink,
         status: false,
       };
-      const quantity = await this.updateQuantity(foods);
+      const quantity = await this.updateQuantity(create.foods);
       if (quantity === ApiErrorCode.failed) {
         console.log("out of stock");
         return ApiErrorCode.failed;
@@ -123,9 +127,12 @@ export class OrderService {
 }
 
 export interface OrderCreate {
-  readonly foods: string[];
+  readonly foods?: string[];
   readonly number: number;
   readonly date: Date;
+  readonly menu?: string;
+  readonly snack?: string;
+  readonly drink?: string;
   readonly price: number;
   readonly promo: string;
   readonly status: boolean;

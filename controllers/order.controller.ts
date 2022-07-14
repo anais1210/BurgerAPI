@@ -49,11 +49,8 @@ export class OrderController {
     res.json(result);
   }
   async createOrder(req: express.Request, res: express.Response) {
-    let result;
-    result = await OrderService.getInstance().createOrder(
-      req.body.foods,
-      req.body.promo
-    );
+    let data = req.body;
+    const result = await OrderService.getInstance().createOrder(data);
 
     if (result === ApiErrorCode.alreadyExists) {
       return res.status(409).end();

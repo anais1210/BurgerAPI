@@ -24,16 +24,16 @@ const MenuSchema = new Schema(
       ref: "Burger",
       required: true,
     },
-    // drink: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "Drink",
-    //   required: true,
-    // },
-    // snack: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: "Snack",
-    //   required: true,
-    // },
+    drink: {
+      type: Schema.Types.ObjectId,
+      default: "62c81a14eb92878438e82615",
+      ref: "Drink",
+    },
+    snack: {
+      type: Schema.Types.ObjectId,
+      default: "62c82b08b87a78393fd65664",
+      ref: "Snack",
+    },
     price: {
       type: Schema.Types.Number,
       required: true,

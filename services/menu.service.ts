@@ -63,16 +63,19 @@ export class MenuService {
     try {
       const model = new MenuModel(create);
       const menu = await model.save();
+      console.log(menu);
       return menu;
     } catch (err) {
+      console.log("je suis là");
+
       return ApiErrorCode.invalidParameters;
     }
   }
-  async getMenuByName(number: string): Promise<MenuDocument | ApiErrorCode> {
-    if (!Types.ObjectId.isValid(number)) {
+  async getMenuByName(name: string): Promise<MenuDocument | ApiErrorCode> {
+    if (!Types.ObjectId.isValid(name)) {
       return ApiErrorCode.invalidParameters;
     }
-    const Menu = await MenuModel.findOne({ number });
+    const Menu = await MenuModel.findOne({ name });
     if (Menu === null) {
       return ApiErrorCode.notFound;
     }
@@ -108,8 +111,8 @@ export class MenuService {
 export interface MenuCreate {
   readonly name: string;
   readonly burger: string;
-  readonly drink: string;
-  readonly snack: string;
+  readonly drink?: string;
+  readonly snack?: string;
   readonly price: number;
 }
 

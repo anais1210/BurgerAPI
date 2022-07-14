@@ -75,6 +75,7 @@ export class MenuController {
     const data = req.body;
     const result = await MenuService.getInstance().createMenu(data);
     if (result === ApiErrorCode.invalidParameters) {
+      console.log(result);
       return res.status(400).end();
     }
     if (result === ApiErrorCode.alreadyExists) {
