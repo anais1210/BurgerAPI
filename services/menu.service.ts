@@ -48,7 +48,7 @@ export class MenuService {
   //     return query.exec();
   //   }
 
-  async getMenuById(id: string): Promise<MenuDocument | ApiErrorCode> {
+  async getMenuById(id: string): Promise<MenuDocument | null> {
     if (!Types.ObjectId.isValid(id)) {
       return null;
     }
@@ -71,15 +71,19 @@ export class MenuService {
       return ApiErrorCode.invalidParameters;
     }
   }
-  async getMenuByName(name: string): Promise<MenuDocument | ApiErrorCode> {
+  async getMenuByName(name: string): Promise<string | ApiErrorCode> {
+    console.log(name);
+
     if (!Types.ObjectId.isValid(name)) {
       return ApiErrorCode.invalidParameters;
     }
-    const Menu = await MenuModel.findOne({ name });
-    if (Menu === null) {
+    const menu = await MenuModel.findOne({ name });
+    if (menu === null) {
       return ApiErrorCode.notFound;
     }
-    return Menu;
+    console.log(name);
+
+    return name;
   }
   async deleteMenu(id: string): Promise<ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {

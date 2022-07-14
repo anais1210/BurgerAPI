@@ -19,16 +19,7 @@ const OrderSchema = new Schema(
     foods: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Burger",
       },
-      // {
-      //   type: Schema.Types.ObjectId,
-      //   ref: "Drink",
-      // },
-      // {
-      //   type: Schema.Types.ObjectId,
-      //   ref: "Snack",
-      // },
     ],
     number: {
       type: Schema.Types.Number,
@@ -43,9 +34,19 @@ const OrderSchema = new Schema(
     status: {
       type: Schema.Types.Boolean,
     },
-    menu: {
-      type: Schema.Types.String,
-      ref: "Menu",
+    menu: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Menu",
+      },
+    ],
+    drink: {
+      type: Schema.Types.ObjectId,
+      ref: "Drink",
+    },
+    snack: {
+      type: Schema.Types.ObjectId,
+      ref: "Snack",
     },
     promo: {
       type: Schema.Types.String,

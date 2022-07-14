@@ -38,6 +38,16 @@ export class OrderService {
     }
     return total;
   }
+  async getMenuPrice(foods: any): Promise<number> {
+    let total = 0;
+    for (const food of foods) {
+      const menu = await MenuService.getInstance().getMenuById(food);
+      if (menu !== null) {
+        total += menu.price;
+      }
+    }
+    return total;
+  }
   async updateQuantity(foods: string[]): Promise<ApiErrorCode> {
     let id: string;
     for (id of foods) {
@@ -78,16 +88,22 @@ export class OrderService {
   ): Promise<OrderDocument | ApiErrorCode> {
     try {
       let price = await this.getPrice(create.foods);
+      let menuPrice;
+      if (create.menu) {
+        menuPrice = await this.getMenuPrice(create.menu);
+      } else {
+        menuPrice = 0;
+      }
+
       const finalPrice = await this.verifyPromo(create.promo, price);
-      const menu = await MenuService.getInstance().getMenuByName(create.menu);
 
       const order = {
         foods: create.foods,
         number: Util.generateNumber(),
         date: new Date(),
         promo: create.promo,
-        price: finalPrice,
-        menu: menu,
+        price: Number(finalPrice) + Number(menuPrice),
+        menu: create.menu,
         snack: create.snack,
         drink: create.drink,
         status: false,
@@ -130,7 +146,7 @@ export interface OrderCreate {
   readonly foods?: string[];
   readonly number: number;
   readonly date: Date;
-  readonly menu?: string;
+  readonly menu?: string[];
   readonly snack?: string;
   readonly drink?: string;
   readonly price: number;
