@@ -1,9 +1,11 @@
 import { config } from "dotenv";
 config(); // Permet de charger les variables d'environnement
-
-import * as express from "express";
+// import * as express from "express";
+import cors from "cors";
 import * as bodyParser from "body-parser";
-import * as mongoose from "mongoose";
+// import * as mongoose from "mongoose";
+import mongoose from "mongoose";
+
 import {
   AuthController,
   BurgerController,
@@ -15,6 +17,7 @@ import {
 } from "./controllers";
 import { RoleService } from "./services";
 import { PromoController } from "./controllers/promo.controller";
+import express from "express";
 
 async function startServer(): Promise<void> {
   await mongoose.connect(process.env.MONGO_URI, {
@@ -24,6 +27,7 @@ async function startServer(): Promise<void> {
     },
   });
   const app = express();
+  // app.use(cors);s
   app.use(bodyParser.json());
   app.use("/ingredient", IngredientController.getInstance().buildRouter());
   app.use("/burger", BurgerController.getInstance().buildRouter());
