@@ -28,26 +28,6 @@ export class OrderService {
     return order;
   }
 
-  async getPrice(foods: any): Promise<number> {
-    let total = 0;
-    for (const food of foods) {
-      const burger = await BurgerService.getInstance().getBurgerById(food);
-      if (burger !== null) {
-        total += burger.price;
-      }
-    }
-    return total;
-  }
-  async getMenuPrice(foods: any): Promise<number> {
-    let total = 0;
-    for (const food of foods) {
-      const menu = await MenuService.getInstance().getMenuById(food);
-      if (menu !== null) {
-        total += menu.price;
-      }
-    }
-    return total;
-  }
   async updateQuantity(foods: string[]): Promise<ApiErrorCode> {
     let id: string;
     for (id of foods) {
@@ -87,28 +67,28 @@ export class OrderService {
     create: OrderCreate
   ): Promise<OrderDocument | ApiErrorCode> {
     try {
-      let price = await this.getPrice(create.foods);
-      let menuPrice;
-      if (create.menu) {
-        menuPrice = await this.getMenuPrice(create.menu);
-      } else {
-        menuPrice = 0;
-      }
+      const menuPrice = await MenuService.getInstance().getMenuPrice(
+        create.menu
+      );
+      console.log(menuPrice);
+
+      let price =
+        (await BurgerService.getInstance().getPrice(create.burger)) + menuPrice;
 
       const finalPrice = await this.verifyPromo(create.promo, price);
 
       const order = {
-        foods: create.foods,
+        burger: create.burger,
         number: Util.generateNumber(),
         date: new Date(),
         promo: create.promo,
-        price: Number(finalPrice) + Number(menuPrice),
+        price: finalPrice,
         menu: create.menu,
         snack: create.snack,
         drink: create.drink,
         status: false,
       };
-      const quantity = await this.updateQuantity(create.foods);
+      const quantity = await this.updateQuantity(create.burger);
       if (quantity === ApiErrorCode.failed) {
         console.log("out of stock");
         return ApiErrorCode.failed;
@@ -143,7 +123,7 @@ export class OrderService {
 }
 
 export interface OrderCreate {
-  readonly foods?: string[];
+  readonly burger?: string[];
   readonly number: number;
   readonly date: Date;
   readonly menu?: string[];

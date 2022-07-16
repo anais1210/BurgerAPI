@@ -58,6 +58,18 @@ export class MenuService {
     }
     return menu;
   }
+  async getMenuPrice(foods: any): Promise<number> {
+    let total = 0;
+    console.log(foods);
+
+    for (const food of foods) {
+      const menu = await this.getMenuById(food.menuName);
+      if (menu !== null) {
+        total += menu.price;
+      }
+    }
+    return total;
+  }
 
   async createMenu(create: MenuCreate): Promise<MenuDocument | ApiErrorCode> {
     try {

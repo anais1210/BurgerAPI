@@ -25,6 +25,17 @@ export class BurgerService {
     return burger;
   }
 
+  async getPrice(foods: any): Promise<number> {
+    let total = 0;
+    for (const food of foods) {
+      const burger = await this.getBurgerById(food);
+      if (burger !== null) {
+        total += burger.price;
+      }
+    }
+    return total;
+  }
+
   async searchBurgers(
     search: BurgerSearch
   ): Promise<BurgerDocument[] | ApiErrorCode> {

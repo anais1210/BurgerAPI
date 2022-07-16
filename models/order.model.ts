@@ -3,7 +3,9 @@ import { Schema, Document } from "mongoose";
 
 export interface OrderProps {
   _id: string;
-  foods: string[];
+  burger: string[];
+  drink: string[];
+  snack: string[];
   number: number;
   date: Date;
   price: number;
@@ -16,9 +18,22 @@ export type OrderDocument = OrderProps & Document;
 
 const OrderSchema = new Schema(
   {
-    foods: [
+    burger: [
       {
         type: Schema.Types.ObjectId,
+        ref: "Burger",
+      },
+    ],
+    drink: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Drink",
+      },
+    ],
+    snack: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Snack",
       },
     ],
     number: {
@@ -36,18 +51,20 @@ const OrderSchema = new Schema(
     },
     menu: [
       {
-        type: Schema.Types.ObjectId,
-        ref: "Menu",
+        menuName: {
+          type: Schema.Types.ObjectId,
+          ref: "Menu",
+        },
+        drinkMenu: {
+          type: Schema.Types.ObjectId,
+          ref: "Drink",
+        },
+        snackMenu: {
+          type: Schema.Types.ObjectId,
+          ref: "Snack",
+        },
       },
     ],
-    drink: {
-      type: Schema.Types.ObjectId,
-      ref: "Drink",
-    },
-    snack: {
-      type: Schema.Types.ObjectId,
-      ref: "Snack",
-    },
     promo: {
       type: Schema.Types.String,
       ref: "Promo",
