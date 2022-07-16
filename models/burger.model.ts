@@ -10,7 +10,7 @@ export interface BurgerProducts {
 export interface BurgerProps {
   _id: string;
   name: string;
-  price: string;
+  price: number;
   availability: boolean;
   products: BurgerProducts[];
 }

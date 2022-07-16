@@ -48,6 +48,7 @@ export class OrderController {
     }
     res.json(result);
   }
+
   async createOrder(req: express.Request, res: express.Response) {
     let data = req.body;
     const result = await OrderService.getInstance().createOrder(data);
@@ -75,15 +76,28 @@ export class OrderController {
     res.status(204).end();
   }
 
+  async updateOrder(req: express.Request, res: express.Response) {
+    const id = req.params.id;
+    const data = req.body;
+    const result = await OrderService.getInstance().updateOrder(id, data);
+    if (result === ApiErrorCode.notFound) {
+      return res.status(404).end();
+    }
+    if (result === ApiErrorCode.invalidParameters) {
+      return res.status(400).end();
+    }
+    res.json(result);
+  }
+
   buildRouter(): express.Router {
     const router = express.Router(); // création d'un nouveau router
     router.post("/", express.json(), this.createOrder.bind(this));
     router.get("/:id", this.getOrderById.bind(this));
     router.delete("/:id", this.deleteOrder.bind(this));
+    router.patch("/:id", this.updateOrder.bind(this));
 
     /* router.get("/", this.searchOrder.bind(this)); // bind permet de ne pas perdre le "this"
-         router.patch("/:id",this.updateOrder.bind(this));
-        */
+     */
     return router;
   }
 }

@@ -47,6 +47,13 @@ export class MenuService {
 
   //     return query.exec();
   //   }
+  async getAllMenus(): Promise<MenuDocument[] | null> {
+    const menu = await MenuModel.find();
+    if (menu === null) {
+      return null;
+    }
+    return menu;
+  }
 
   async getMenuById(id: string): Promise<MenuDocument | null> {
     if (!Types.ObjectId.isValid(id)) {
@@ -60,8 +67,6 @@ export class MenuService {
   }
   async getMenuPrice(foods: any): Promise<number> {
     let total = 0;
-    console.log(foods);
-
     for (const food of foods) {
       const menu = await this.getMenuById(food.menuName);
       if (menu !== null) {
@@ -107,21 +112,21 @@ export class MenuService {
     }
     return ApiErrorCode.success;
   }
-  //   async updateMenu(
-  //     id: string,
-  //     update: MenuUpdate
-  //   ): Promise<MenuDocument | ApiErrorCode> {
-  //     if (!Types.ObjectId.isValid(id)) {
-  //       return ApiErrorCode.invalidParameters;
-  //     }
-  //     const burger = await MenuModel.findByIdAndUpdate(id, update, {
-  //       returnDocument: "after",
-  //     });
-  //     if (burger === null) {
-  //       return ApiErrorCode.notFound;
-  //     }
-  //     return burger;
-  //   }
+  async updateMenu(
+    id: string,
+    update: MenuUpdate
+  ): Promise<MenuDocument | ApiErrorCode> {
+    if (!Types.ObjectId.isValid(id)) {
+      return ApiErrorCode.invalidParameters;
+    }
+    const burger = await MenuModel.findByIdAndUpdate(id, update, {
+      returnDocument: "after",
+    });
+    if (burger === null) {
+      return ApiErrorCode.notFound;
+    }
+    return burger;
+  }
 }
 
 export interface MenuCreate {

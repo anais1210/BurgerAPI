@@ -46,30 +46,38 @@ export class MenuController {
   //     res.json(Menus);
   //   }
 
-  //   async getMenuById(req: express.Request, res: express.Response) {
-  //     const id = req.params.id;
-  //     const result = await MenuService.getInstance().getMenuById(id);
-  //     if (result === ApiErrorCode.notFound) {
-  //       return res.status(404).end();
-  //     }
-  //     if (result === ApiErrorCode.invalidParameters) {
-  //       return res.status(400).end();
-  //     }
-  //     res.json(result);
-  //   }
+  async getAllMenus(req: express.Request, res: express.Response) {
+    const id = req.params.id;
+    const result = await MenuService.getInstance().getAllMenus();
+    if (result === null) {
+      return res.status(404).end();
+    }
 
-  //   async getMenuIdByName(req: express.Request, res: express.Response) {
-  //     const name = req.params.name;
-  //     console.log(name);
-  //     const result = await MenuService.getInstance().getMenuByName(name);
-  //     if (result === ApiErrorCode.notFound) {
-  //       return res.status(404).end();
-  //     }
-  //     if (result === ApiErrorCode.invalidParameters) {
-  //       return res.status(400).end();
-  //     }
-  //     res.json(result);
-  //   }
+    res.json(result);
+  }
+
+  async getMenuById(req: express.Request, res: express.Response) {
+    const id = req.params.id;
+    const result = await MenuService.getInstance().getMenuById(id);
+    if (result === null) {
+      return res.status(404).end();
+    }
+
+    res.json(result);
+  }
+
+  async getMenuIdByName(req: express.Request, res: express.Response) {
+    const name = req.params.name;
+    console.log(name);
+    const result = await MenuService.getInstance().getMenuByName(name);
+    if (result === ApiErrorCode.notFound) {
+      return res.status(404).end();
+    }
+    if (result === ApiErrorCode.invalidParameters) {
+      return res.status(400).end();
+    }
+    res.json(result);
+  }
 
   async createMenu(req: express.Request, res: express.Response) {
     const data = req.body;
@@ -84,39 +92,40 @@ export class MenuController {
     res.json(result);
   }
 
-  //   async deleteMenu(req: express.Request, res: express.Response) {
-  //     const id = req.params.id;
-  //     const result = await MenuService.getInstance().deleteMenu(id);
-  //     if (result === ApiErrorCode.notFound) {
-  //       return res.status(404).end();
-  //     }
-  //     if (result === ApiErrorCode.invalidParameters) {
-  //       return res.status(400).end();
-  //     }
-  //     res.status(204).end();
-  //   }
+  async deleteMenu(req: express.Request, res: express.Response) {
+    const id = req.params.id;
+    const result = await MenuService.getInstance().deleteMenu(id);
+    if (result === ApiErrorCode.notFound) {
+      return res.status(404).end();
+    }
+    if (result === ApiErrorCode.invalidParameters) {
+      return res.status(400).end();
+    }
+    res.status(204).end();
+  }
 
-  //   async updateMenu(req: express.Request, res: express.Response) {
-  //     const id = req.params.id;
-  //     const data = req.body;
-  //     const result = await MenuService.getInstance().updateMenu(id, data);
-  //     if (result === ApiErrorCode.notFound) {
-  //       return res.status(404).end();
-  //     }
-  //     if (result === ApiErrorCode.invalidParameters) {
-  //       return res.status(400).end();
-  //     }
-  //     res.json(result);
-  //   }
+  async updateMenu(req: express.Request, res: express.Response) {
+    const id = req.params.id;
+    const data = req.body;
+    const result = await MenuService.getInstance().updateMenu(id, data);
+    if (result === ApiErrorCode.notFound) {
+      return res.status(404).end();
+    }
+    if (result === ApiErrorCode.invalidParameters) {
+      return res.status(400).end();
+    }
+    res.json(result);
+  }
 
   buildRouter(): express.Router {
     const router = express.Router(); //création d'un nouveau routeur
     // router.get("/", this.searchMenu.bind(this));
-    // router.get("/:id", this.getMenuById.bind(this));
-    // router.get("/id/:name", this.getMenuIdByName.bind(this));
+    router.get("/:id", this.getMenuById.bind(this));
+    router.get("/", this.getAllMenus.bind(this));
+    router.get("/id/:name", this.getMenuIdByName.bind(this));
     router.post("/", this.createMenu.bind(this));
-    // router.delete("/:id", this.deleteMenu.bind(this));
-    // router.patch("/:id", this.updateMenu.bind(this));
+    router.delete("/:id", this.deleteMenu.bind(this));
+    router.patch("/:id", this.updateMenu.bind(this));
     return router;
   }
 }

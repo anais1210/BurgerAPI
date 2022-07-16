@@ -28,6 +28,22 @@ export class OrderService {
     return order;
   }
 
+  async updateOrder(
+    id: string,
+    update: OrderUpdate
+  ): Promise<OrderDocument | ApiErrorCode> {
+    if (!Types.ObjectId.isValid(id)) {
+      return ApiErrorCode.invalidParameters;
+    }
+    const order = await OrderModel.findByIdAndUpdate(id, update, {
+      returnDocument: "after",
+    });
+    if (order === null) {
+      return ApiErrorCode.notFound;
+    }
+    return order;
+  }
+
   async updateQuantity(foods: string[]): Promise<ApiErrorCode> {
     let id: string;
     for (id of foods) {
@@ -70,8 +86,6 @@ export class OrderService {
       const menuPrice = await MenuService.getInstance().getMenuPrice(
         create.menu
       );
-      console.log(menuPrice);
-
       let price =
         (await BurgerService.getInstance().getPrice(create.burger)) + menuPrice;
 
@@ -135,9 +149,6 @@ export interface OrderCreate {
 }
 
 export interface OrderUpdate {
-  readonly foods?: string[];
-  readonly number?: number;
-  readonly date?: Date;
   readonly price?: number;
   readonly status?: boolean;
 }

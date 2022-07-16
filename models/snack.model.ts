@@ -22,11 +22,6 @@ const SnackSchema = new Schema(
       required: true,
       default: 0,
     },
-    quantity: {
-      type: Schema.Types.Number,
-      required: true,
-      default: 0,
-    },
   },
   {
     versionKey: false,

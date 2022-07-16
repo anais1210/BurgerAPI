@@ -102,11 +102,9 @@ export interface SnackSearch {
 export interface SnackCreate {
   readonly name: string;
   readonly price: number;
-  readonly quantity: number;
 }
 
 export interface SnackUpdate {
   readonly name?: string;
   readonly price?: number;
-  readonly quantity?: number;
 }
