@@ -47,6 +47,15 @@ export class BurgerController {
     });
     res.json(burgers);
   }
+  async getAllBurgers(req: express.Request, res: express.Response) {
+    const id = req.params.id;
+    const result = await BurgerService.getInstance().getAllBurgers();
+    if (result === null) {
+      return res.status(404).end();
+    }
+
+    res.json(result);
+  }
 
   async getBurgerById(req: express.Request, res: express.Response) {
     const id = req.params.id;
@@ -101,6 +110,7 @@ export class BurgerController {
   buildRouter(): express.Router {
     const router = express.Router(); //création d'un nouveau routeur
     router.get("/", this.searchBurger.bind(this));
+    router.get("/burgers", this.getAllBurgers.bind(this));
     router.get("/:id", this.getBurgerById.bind(this));
     router.post("/", this.createBurger.bind(this));
     router.delete("/:id", this.deleteBurger.bind(this));
