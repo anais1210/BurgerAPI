@@ -47,7 +47,6 @@ export class MenuController {
   //   }
 
   async getAllMenus(req: express.Request, res: express.Response) {
-    const id = req.params.id;
     const result = await MenuService.getInstance().getAllMenus();
     if (result === null) {
       return res.status(404).end();

@@ -25,14 +25,6 @@ export class BurgerService {
     return burger;
   }
 
-  async getAllBurgers(): Promise<BurgerDocument[] | null> {
-    const menu = await BurgerModel.find();
-    if (menu === null) {
-      return null;
-    }
-    return menu;
-  }
-
   async getPrice(foods: any): Promise<number> {
     let total = 0;
     for (const food of foods) {
