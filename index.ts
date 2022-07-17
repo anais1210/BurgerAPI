@@ -48,6 +48,7 @@ async function startServer(): Promise<void> {
   app.use("/order", OrderController.getInstance().buildRouter());
   app.use("/snack", SnackController.getInstance().buildRouter());
   app.use("/promo", PromoController.getInstance().buildRouter());
+  app.use("/user", AuthController.getInstance().buildRouter());
   app.listen(process.env.PORT, async function () {
     await bootstrap();
     console.log("Server started on port " + process.env.PORT);

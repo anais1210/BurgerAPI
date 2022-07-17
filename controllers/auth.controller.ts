@@ -18,9 +18,11 @@ export class AuthController {
   async subscribe(req: Request, res: Response): Promise<void> {
     const data = req.body;
     const result = await AuthService.getInstance().subscribeUser({
+      firstname: data.firstname,
+      lastname: data.lastname,
       login: data.login,
       password: data.password,
-      roleName: "admin",
+      roleName: data.roleName,
     });
     if (result === ApiErrorCode.alreadyExists) {
       res.status(409).end(); // CONFLICT

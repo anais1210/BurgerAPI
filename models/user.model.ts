@@ -6,6 +6,8 @@ import { RoleProps } from "./role.model";
 export interface UserProps {
   _id: string;
   login: string;
+  lastname: string;
+  firstname: string;
   password: string;
   sessions: (SessionProps | string)[];
   role: string | RoleProps;
@@ -19,6 +21,14 @@ const userSchema = new Schema(
       type: Schema.Types.String,
       required: true,
       unique: true,
+    },
+    firstname: {
+      type: Schema.Types.String,
+      required: true,
+    },
+    lastname: {
+      type: Schema.Types.String,
+      required: true,
     },
     password: {
       type: Schema.Types.String,
