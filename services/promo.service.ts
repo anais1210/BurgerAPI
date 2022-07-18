@@ -1,11 +1,14 @@
-import { PromoDocument, PromoModel } from "../models/promo.model";
-import { FilterQuery, Types } from "mongoose";
-import { ApiErrorCode } from "../api-error-code.enum";
+import {PromoDocument, PromoModel} from "../models";
+import {FilterQuery, Types} from "mongoose";
+import {ApiErrorCode} from "../api-error-code.enum";
+
 
 export class PromoService {
+
   private static instance: PromoService;
 
-  private constructor() {}
+  private constructor() {
+  }
 
   public static getInstance(): PromoService {
     if (PromoService.instance === undefined) {
@@ -15,22 +18,49 @@ export class PromoService {
   }
 
   async getPromoById(id: string): Promise<PromoDocument | ApiErrorCode> {
-    if (!Types.ObjectId.isValid(id)) {
+    if(!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
     }
     const promo = await PromoModel.findById(id);
-    if (promo === null) {
+    if(promo === null) {
       return ApiErrorCode.notFound;
     }
     return promo;
   }
 
-  async getPromoByName(name: string): Promise<PromoDocument | ApiErrorCode> {
-    if (typeof name !== "string") {
+
+  async searchPromo(search: PromoSearch): Promise<PromoDocument[] | ApiErrorCode> {
+    const filter: FilterQuery<PromoDocument> = {};
+    if (search.code !== undefined) {
+      filter.code = {
+        $regex: search.code,
+        $options: "i"  // case insensitive
+      };
+    }
+
+    if(search.percent !== undefined) {
+      filter.percent = {
+        $gte: search.percent
+      };
+    }
+
+    const query = PromoModel.find(filter);
+    if(search.limit !== undefined) {
+      query.limit(search.limit);
+    }
+
+    if(search.offset !== undefined) {
+      query.skip(search.offset);
+    }
+    return query.exec();
+  }
+
+  async getPromoByCode(code: string): Promise<PromoDocument | ApiErrorCode> {
+    if (typeof code !== "string") {
       return ApiErrorCode.invalidParameters;
     }
     const promo = await PromoModel.findOne({
-      name: name,
+      code: code,
     });
     if (promo === null) {
       return ApiErrorCode.notFound;
@@ -39,28 +69,7 @@ export class PromoService {
     return promo.percent;
   }
 
-  async searchPromos(
-    search: PromoSearch
-  ): Promise<PromoDocument[] | ApiErrorCode> {
-    const filter: FilterQuery<PromoDocument> = {};
-    if (search.id !== undefined) {
-      filter.id = search.id;
-    }
-    if (search.code !== undefined) {
-      filter.code = search.code;
-    }
-    const query = PromoModel.find(filter);
-    if (search.percent !== undefined) {
-      filter.percent = {
-        $gte: search.percent,
-      };
-    }
-    return query.exec();
-  }
-
-  async createPromo(
-    create: PromoCreate
-  ): Promise<PromoDocument | ApiErrorCode> {
+  async createPromo(create: PromoCreate): Promise<PromoDocument | ApiErrorCode> {
     try {
       const model = new PromoModel(create);
       const promo = await model.save();
@@ -69,16 +78,46 @@ export class PromoService {
       return ApiErrorCode.invalidParameters;
     }
   }
+
+  async deletePromo(id: string): Promise<ApiErrorCode> {
+    if(!Types.ObjectId.isValid(id)) {
+      return ApiErrorCode.invalidParameters;
+    }
+    const promo = await PromoModel.findByIdAndDelete(id);
+    if(promo === null) {
+      return ApiErrorCode.notFound;
+    }
+    return ApiErrorCode.success;
+  }
+
+  async updatePromo(id:string, update: PromoUpdate): Promise<PromoDocument | ApiErrorCode> {
+    if(!Types.ObjectId.isValid(id)) {
+      return ApiErrorCode.invalidParameters;
+    }
+    const promo = await PromoModel.findByIdAndUpdate(id, update, {
+      returnDocument: "after"
+    });
+    if(promo === null) {
+      return ApiErrorCode.notFound;
+    }
+    return promo;
+  }
 }
 
 export interface PromoCreate {
-  readonly id: string;
   readonly code: string;
-  readonly percent?: number;
+  readonly percent: number;
+
 }
 
 export interface PromoSearch {
-  readonly id?: string;
+  readonly code?: string;
+  readonly percent?: number;
+  readonly limit?: number;
+  readonly offset?: number;
+}
+
+export interface PromoUpdate {
   readonly code?: string;
   readonly percent?: number;
 }

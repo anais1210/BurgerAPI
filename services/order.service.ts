@@ -74,7 +74,7 @@ export class OrderService {
   }
   async verifyPromo(code: string, price: number): Promise<Number> {
     if (code !== undefined) {
-      const percent = await PromoService.getInstance().getPromoByName(code);
+      const percent = await PromoService.getInstance().getPromoByCode(code);
       return (price = Number(price) - (Number(percent) / 100) * Number(price));
     }
     return Number(price);

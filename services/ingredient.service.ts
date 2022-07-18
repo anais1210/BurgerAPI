@@ -83,9 +83,7 @@ export class IngredientService {
     return query.exec();
   }
 
-  async createIngredient(
-    create: IngredientCreate
-  ): Promise<IngredientDocument | ApiErrorCode> {
+  async createIngredient(create: IngredientCreate): Promise<IngredientDocument | ApiErrorCode> {
     try {
       const model = new IngredientModel(create);
       const ingredient = await model.save();

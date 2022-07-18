@@ -6,3 +6,4 @@ export * from "./burger.service";
 export * from "./drink.service";
 export * from "./snack.service";
 export * from "./menu.service";
+export * from "./promo.service";
