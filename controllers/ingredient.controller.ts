@@ -1,6 +1,8 @@
 import * as express from "express";
 import { IngredientService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
+import { checkUserConnected } from "../middlewares";
+import { checkUserAccess } from "../middlewares/role.middleware";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
@@ -113,12 +115,42 @@ export class IngredientController {
 
   buildRouter(): express.Router {
     const router = express.Router(); //création d'un nouveau routeur
-    router.get("/", this.searchIngredient.bind(this));
-    router.get("/:id", this.getIngredientById.bind(this));
-    router.get("/id/:name", this.getIngredientIdByName.bind(this));
-    router.post("/", this.createIngredient.bind(this));
-    router.delete("/:id", this.deleteIngredient.bind(this));
-    router.patch("/:id", this.updateIngredient.bind(this));
+    router.get(
+      "/",
+      checkUserConnected(),
+      checkUserAccess(["menu-read"]),
+      this.searchIngredient.bind(this)
+    );
+    router.get(
+      "/:id",
+      checkUserConnected(),
+      checkUserAccess(["menu-read"]),
+      this.getIngredientById.bind(this)
+    );
+    router.get(
+      "/id/:name",
+      checkUserConnected(),
+      checkUserAccess(["menu-read"]),
+      this.getIngredientIdByName.bind(this)
+    );
+    router.post(
+      "/",
+      checkUserConnected(),
+      checkUserAccess(["menu-create"]),
+      this.createIngredient.bind(this)
+    );
+    router.delete(
+      "/:id",
+      checkUserConnected(),
+      checkUserAccess(["menu-delete"]),
+      this.deleteIngredient.bind(this)
+    );
+    router.patch(
+      "/:id",
+      checkUserConnected(),
+      checkUserAccess(["menu-update"]),
+      this.updateIngredient.bind(this)
+    );
     return router;
   }
 }

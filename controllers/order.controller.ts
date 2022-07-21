@@ -4,6 +4,8 @@ import { OrderDocument, OrderModel } from "../models";
 import { OrderService } from "../services/order.service";
 import { ApiErrorCode } from "../api-error-code.enum";
 import { Util } from "../utils";
+import { checkUserConnected } from "../middlewares";
+import { checkUserAccess } from "../middlewares/role.middleware";
 import {
   BurgerService,
   IngredientService,
@@ -91,10 +93,31 @@ export class OrderController {
 
   buildRouter(): express.Router {
     const router = express.Router(); // création d'un nouveau router
-    router.post("/", express.json(), this.createOrder.bind(this));
-    router.get("/:id", this.getOrderById.bind(this));
-    router.delete("/:id", this.deleteOrder.bind(this));
-    router.patch("/:id", this.updateOrder.bind(this));
+    router.post(
+      "/",
+      checkUserConnected(),
+      checkUserAccess(["commande-read"]),
+      express.json(),
+      this.createOrder.bind(this)
+    );
+    router.get(
+      "/:id",
+      checkUserConnected(),
+      checkUserAccess(["commande-read"]),
+      this.getOrderById.bind(this)
+    );
+    router.delete(
+      "/:id",
+      checkUserConnected(),
+      checkUserAccess(["commande-delete"]),
+      this.deleteOrder.bind(this)
+    );
+    router.patch(
+      "/:id",
+      checkUserConnected(),
+      checkUserAccess(["commande-uodate"]),
+      this.updateOrder.bind(this)
+    );
 
     /* router.get("/", this.searchOrder.bind(this)); // bind permet de ne pas perdre le "this"
      */
