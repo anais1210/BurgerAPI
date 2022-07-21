@@ -1,6 +1,8 @@
 import * as express from "express";
 import { MenuService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
+import {checkUserAccess} from "../middlewares/role.middleware";
+import {checkUserConnected} from "../middlewares";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
@@ -123,8 +125,8 @@ export class MenuController {
     router.get("/", this.getAllMenus.bind(this));
     router.get("/id/:name", this.getMenuIdByName.bind(this));
     router.post("/", this.createMenu.bind(this));
-    router.delete("/:id", this.deleteMenu.bind(this));
-    router.patch("/:id", this.updateMenu.bind(this));
+    router.delete("/:id", checkUserConnected(), checkUserAccess(["menu-delete"]), this.deleteMenu.bind(this));
+    router.patch("/:id", checkUserConnected(), checkUserAccess(["menu-update"]), this.updateMenu.bind(this));
     return router;
   }
 }

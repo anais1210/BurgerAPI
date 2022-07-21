@@ -3,6 +3,8 @@ import { FilterQuery, Schema, Types } from "mongoose";
 import { BurgerDocument, BurgerModel } from "../models";
 import { BurgerService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
+import {checkUserConnected} from "../middlewares";
+import {checkUserAccess} from "../middlewares/role.middleware";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
@@ -99,11 +101,11 @@ export class BurgerController {
 
   buildRouter(): express.Router {
     const router = express.Router(); //création d'un nouveau routeur
-    router.get("/", this.searchBurger.bind(this));
+    router.get("/" ,this.searchBurger.bind(this));
     router.get("/:id", this.getBurgerById.bind(this));
     router.post("/", this.createBurger.bind(this));
-    router.delete("/:id", this.deleteBurger.bind(this));
-    router.patch("/:id", this.updateBurger.bind(this));
+    router.delete("/:id", checkUserConnected(), checkUserAccess(["burger-delete"]), this.deleteBurger.bind(this));
+    router.patch("/:id", checkUserConnected(), checkUserAccess(["burger-update"]), this.updateBurger.bind(this));
     return router;
   }
 }

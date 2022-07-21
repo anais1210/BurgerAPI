@@ -1,6 +1,8 @@
 import * as express from "express";
 import { DrinkService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
+import {checkUserConnected} from "../middlewares";
+import {checkUserAccess} from "../middlewares/role.middleware";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
@@ -97,8 +99,8 @@ export class DrinkController {
     router.get("/", this.searchDrink.bind(this));
     router.get("/:id", this.getDrinkById.bind(this));
     router.post("/", this.createDrink.bind(this));
-    router.delete("/:id", checkUserConnected(), checkUserAccess(["drink-update"]), this.deleteDrink.bind(this));
-    router.patch("/:id", checkUserConnected(), checkUserAccess(["drink-update"]), this.updateDrink.bind(this));
+    router.delete("/:id",checkUserConnected(), checkUserAccess(["drink-delete"]), this.deleteDrink.bind(this));
+    router.patch("/:id",checkUserConnected(), checkUserAccess(["drink-update"]), this.updateDrink.bind(this));
     return router;
   }
 }

@@ -1,6 +1,8 @@
 import * as express from "express";
 import { SnackService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
+import {checkUserAccess} from "../middlewares/role.middleware";
+import {checkUserConnected} from "../middlewares";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
@@ -97,8 +99,8 @@ export class SnackController {
     router.get("/", this.searchSnack.bind(this));
     router.get("/:id", this.getSnackById.bind(this));
     router.post("/", this.createSnack.bind(this));
-    router.delete("/:id", this.deleteSnack.bind(this));
-    router.patch("/:id", this.updateSnack.bind(this));
+    router.delete("/:id", checkUserConnected(), checkUserAccess(["snack-delete"]), this.deleteSnack.bind(this));
+    router.patch("/:id", checkUserConnected(), checkUserAccess(["snack-update"]), this.updateSnack.bind(this));
     return router;
   }
 }
