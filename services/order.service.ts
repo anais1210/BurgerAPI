@@ -44,7 +44,7 @@ export class OrderService {
     return order;
   }
 
-  async updateQuantity(foods: string[]): Promise<ApiErrorCode> {
+  async updateQuantityBurger(foods: string[]): Promise<ApiErrorCode> {
     let id: string;
     for (id of foods) {
       const burger = await BurgerService.getInstance().getBurgerById(id);
@@ -57,9 +57,7 @@ export class OrderService {
 
         if (quantityBefore["quantity"] < 0) {
           console.log("failed");
-
           return ApiErrorCode.failed;
-          break;
         } else {
           const newQuantity: IngredientUpdate = {
             quantity: quantityBefore["quantity"] - ingredient["quantity"],
@@ -102,7 +100,7 @@ export class OrderService {
         drink: create.drink,
         status: false,
       };
-      const quantity = await this.updateQuantity(create.burger);
+      const quantity = await this.updateQuantityBurger(create.burger);
       if (quantity === ApiErrorCode.failed) {
         console.log("out of stock");
         return ApiErrorCode.failed;
