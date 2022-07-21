@@ -97,8 +97,8 @@ export class DrinkController {
     router.get("/", this.searchDrink.bind(this));
     router.get("/:id", this.getDrinkById.bind(this));
     router.post("/", this.createDrink.bind(this));
-    router.delete("/:id", this.deleteDrink.bind(this));
-    router.patch("/:id", this.updateDrink.bind(this));
+    router.delete("/:id", checkUserConnected(), checkUserAccess(["drink-update"]), this.deleteDrink.bind(this));
+    router.patch("/:id", checkUserConnected(), checkUserAccess(["drink-update"]), this.updateDrink.bind(this));
     return router;
   }
 }
