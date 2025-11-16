@@ -20,26 +20,9 @@ import { PromoController } from "./controllers/promo.controller";
 import express from "express";
 
 async function startServer(): Promise<void> {
-  await mongoose.connect(process.env.MONGO_URI, {
-    auth: {
-      username: process.env.MONGO_USER,
-      password: process.env.MONGO_PASSWORD,
-    },
-  });
+  await mongoose.connect(process.env.MONGO_URI);
   const app = express();
   app.use(cors());
-  // app.use((req, res, next) => {
-  //   res.header(
-  //     "Access-Control-Allow-Origin, *",
-  //     "Origin, X-Requested-with, Content_Type,Accept,Authorization"
-  //   );
-  //   if (req.method === "OPTIONS") {
-  //     res.header("Access-Control-Allow-Methods", "PUT,POST,PATCH,DELETE,GET");
-  //     return res.status(200).json({});
-  //   }
-  //   next();
-  // });
-  // app.use(cors);s
   app.use(bodyParser.json());
   app.use("/ingredient", IngredientController.getInstance().buildRouter());
   app.use("/burger", BurgerController.getInstance().buildRouter());
@@ -56,6 +39,8 @@ async function startServer(): Promise<void> {
 }
 
 async function bootstrap(): Promise<void> {
+  console.log("MongoDB connected");
+
   const adminRole = await RoleService.getInstance().getByName("admin");
   const preparateurRole = await RoleService.getInstance().getByName(
     "preparateur"
