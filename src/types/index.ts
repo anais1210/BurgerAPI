@@ -3,7 +3,7 @@ export interface MenuItem {
   name: string;
   description: string;
   price: number;
-  category: 'burgers' | 'sides' | 'drinks' | 'desserts';
+  category: "burgers" | "snack" | "drinks";
   image: string;
   available: boolean;
 }
@@ -13,7 +13,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type OrderStatus = 'received' | 'preparing' | 'done';
+export type OrderStatus = "received" | "preparing" | "done";
 
 export interface Order {
   id: string;
@@ -24,4 +24,22 @@ export interface Order {
   createdAt: Date;
 }
 
-export type Category = 'all' | 'burgers' | 'sides' | 'drinks' | 'desserts';
+export type Category = "all" | "burgers" | "sides" | "drinks" | "meals";
+export type Products = "burgers" | "sides" | "drinks";
+
+export interface ProductDTO {
+  id: string;
+  name: string;
+  description?: string;
+  type: Products;
+  price: number;
+  imageUrl?: string;
+}
+export interface OrderDTO {
+  id: string;
+  name: string;
+  description: string;
+  items: ProductDTO[];
+  price: number;
+  date: Date;
+}

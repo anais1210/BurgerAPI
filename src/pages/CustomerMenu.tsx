@@ -1,27 +1,29 @@
-import { useState } from 'react';
-import { useMenu } from '../context/MenuContext';
-import { useCart } from '../context/CartContext';
-import { Category } from '../types';
-import Navbar from '../components/common/Navbar';
-import MenuCard from '../components/customer/MenuCard';
-import Cart from '../components/customer/Cart';
+import { useState } from "react";
+import { useMenu } from "../context/MenuContext";
+import { useCart } from "../context/CartContext";
+import { Category } from "../types";
+import Navbar from "../components/common/Navbar";
+import MenuCard from "../components/customer/MenuCard";
+import Cart from "../components/customer/Cart";
 
 const categories: { id: Category; label: string; icon: string }[] = [
-  { id: 'all', label: 'All', icon: '🍽️' },
-  { id: 'burgers', label: 'Burgers', icon: '🍔' },
-  { id: 'sides', label: 'Sides', icon: '🍟' },
-  { id: 'drinks', label: 'Drinks', icon: '🥤' },
-  { id: 'desserts', label: 'Desserts', icon: '🍰' },
+  { id: "all", label: "All", icon: "✨" },
+  { id: "meals", label: "Meals", icon: "🍽️" },
+  { id: "burgers", label: "Burgers", icon: "🍔" },
+  { id: "sides", label: "Sides", icon: "🍟" },
+  { id: "drinks", label: "Drinks", icon: "🥤" },
+  // { id: "desserts", label: "Desserts", icon: "🍰" },
 ];
 
 export default function CustomerMenu() {
   const { menuItems } = useMenu();
   const { getCartItemCount } = useCart();
-  const [selectedCategory, setSelectedCategory] = useState<Category>('all');
+  const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [burgers, setBurgers] = useState<BurgerDTO[]>();
 
   const filteredItems =
-    selectedCategory === 'all'
+    selectedCategory === "all"
       ? menuItems
       : menuItems.filter((item) => item.category === selectedCategory);
 
@@ -41,8 +43,8 @@ export default function CustomerMenu() {
                 onClick={() => setSelectedCategory(category.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all duration-200 ${
                   selectedCategory === category.id
-                    ? 'bg-primary text-white shadow-lg'
-                    : 'bg-white text-gray-600 hover:bg-gray-100 shadow'
+                    ? "bg-primary text-white shadow-lg"
+                    : "bg-white text-gray-600 hover:bg-gray-100 shadow"
                 }`}
               >
                 <span>{category.icon}</span>
@@ -56,8 +58,8 @@ export default function CustomerMenu() {
       {/* Menu Grid */}
       <main className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="font-heading font-bold text-3xl text-dark mb-6">
-          {selectedCategory === 'all'
-            ? 'Our Menu'
+          {selectedCategory === "all"
+            ? "Our Menu"
             : categories.find((c) => c.id === selectedCategory)?.label}
         </h1>
 
@@ -99,7 +101,7 @@ export default function CustomerMenu() {
           </svg>
           {cartItemCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-secondary text-dark text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-              {cartItemCount > 9 ? '9+' : cartItemCount}
+              {cartItemCount > 9 ? "9+" : cartItemCount}
             </span>
           )}
         </div>
