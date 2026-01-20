@@ -1,13 +1,12 @@
 import * as mongoose from "mongoose";
 import { Schema, Document } from "mongoose";
+import { ProductProps } from "./product.model";
 
 export interface MenuProps {
   _id: string;
   name: string;
-  burger: string;
   description?: string;
-  drink: string;
-  snack: string;
+  products: ProductProps[];
   price: number;
   imageUrl?: string;
 }
@@ -24,19 +23,11 @@ const MenuSchema = new Schema(
     description: {
       type: Schema.Types.String,
     },
-    burger: {
+    products: {
       type: Schema.Types.ObjectId,
-      ref: "Burger",
-      required: true,
+      ref: "Products",
     },
-    drink: {
-      type: Schema.Types.ObjectId,
-      ref: "Drink",
-    },
-    snack: {
-      type: Schema.Types.ObjectId,
-      ref: "Snack",
-    },
+
     price: {
       type: Schema.Types.Number,
       required: true,

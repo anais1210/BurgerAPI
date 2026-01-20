@@ -36,7 +36,7 @@ async function startServer(): Promise<void> {
 async function bootstrap(): Promise<void> {
   console.log("MongoDB connected");
 
-  const resources = ["Product", "drink", "menu", "order", "snack", "user"];
+  const resources = ["product", "menu", "order", "user"];
 
   // Génération CRUD
   const generateCrudPermissions = (resources: string[]) => {
@@ -49,19 +49,12 @@ async function bootstrap(): Promise<void> {
   // Récupération des rôles existants
   const roleService = RoleService.getInstance();
   const adminRole = await roleService.getByName("admin");
-  const preparateurRole = await roleService.getByName("preparateur");
   const customerRole = await roleService.getByName("customer");
 
   // ADMIN
   if (!adminRole) {
     await roleService.createRole("admin", adminPermissions);
     console.log("Admin role created");
-  }
-
-  // PREPARATEUR
-  if (!preparateurRole) {
-    await roleService.createRole("preparateur", ["menu-read", "order-read"]);
-    console.log("Preparateur role created");
   }
 
   // CUSTOMER

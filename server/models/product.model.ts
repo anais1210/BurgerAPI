@@ -8,6 +8,7 @@ export interface ProductProps {
   name: string;
   description?: string;
   category?: Category;
+  avaibility: boolean;
   price: number;
   imageUrl?: string;
 }
@@ -26,6 +27,10 @@ const ProductSchema = new Schema(
     category: {
       type: Schema.Types.String,
       enum: ["burger", "drink", "snack", "dessert"],
+    },
+    avaibility: {
+      type: Schema.Types.Boolean,
+      default: true,
     },
     price: {
       type: Schema.Types.Number,

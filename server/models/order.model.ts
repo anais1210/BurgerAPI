@@ -1,30 +1,18 @@
 import * as mongoose from "mongoose";
 import { Schema, Document } from "mongoose";
-export type OrderStatus = "received" | "preparing" | "finish" | "complete";
+export type OrderStatus = "received" | "preparing" | "complete";
 
-export interface ProductItemsProps {
+export interface ItemsProps {
   itemId: string;
-  quantity: number;
-}
-
-export interface MenuItemsProps {
-  item: {
-    menuId: string;
-    drinkId: string;
-    snackId: string;
-  };
   quantity: number;
 }
 export interface OrderProps {
   _id: string;
-  orderToken: string;
-  burger?: ProductItemsProps[];
-  drink?: ProductItemsProps[];
-  snack?: ProductItemsProps[];
+  products: ItemsProps[];
   number: number;
   date: Date;
   total: number;
-  menu?: MenuItemsProps[];
+  menu?: ItemsProps[];
   status: OrderStatus;
   name: string;
   email: string;
@@ -34,17 +22,11 @@ export type OrderDocument = OrderProps & Document;
 
 const OrderSchema = new Schema(
   {
-    orderToken: {
-      type: Schema.Types.String,
-      required: true,
-      unique: true,
-    },
-    burger: [
+    products: [
       {
-        item: {
+        itemId: {
           type: Schema.Types.ObjectId,
-          ref: "Burger",
-          required: true,
+          ref: "Products",
         },
         quantity: {
           type: Number,
@@ -53,34 +35,7 @@ const OrderSchema = new Schema(
         },
       },
     ],
-    drink: [
-      {
-        item: {
-          type: Schema.Types.ObjectId,
-          ref: "Drink",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          default: 1,
-          min: 1,
-        },
-      },
-    ],
-    snack: [
-      {
-        item: {
-          type: Schema.Types.ObjectId,
-          ref: "Snack",
-          required: true,
-        },
-        quantity: {
-          type: Number,
-          default: 1,
-          min: 1,
-        },
-      },
-    ],
+
     number: {
       type: Schema.Types.Number,
       unique: true,
@@ -94,16 +49,15 @@ const OrderSchema = new Schema(
     },
     status: {
       type: Schema.Types.String,
-      enum: ["received", "preparing", "finish", "complete"],
+      enum: ["received", "preparing", "complete"],
       required: true,
       default: "received",
     },
     menu: [
       {
-        item: {
-          menuId: { type: Schema.Types.ObjectId, ref: "Menu" },
-          drinkMenu: { type: Schema.Types.ObjectId, ref: "Drink" },
-          snackMenu: { type: Schema.Types.ObjectId, ref: "Snack" },
+        itemId: {
+          type: Schema.Types.ObjectId,
+          ref: "Menu",
         },
         quantity: {
           type: Number,

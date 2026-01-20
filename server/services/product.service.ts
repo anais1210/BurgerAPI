@@ -116,19 +116,28 @@ export class ProductService {
 export interface ProductSearch {
   readonly name?: string;
   readonly price?: number;
+  readonly category?: string;
+  readonly description?: string;
   readonly availability?: boolean;
+
+  readonly imageUrl?: string;
   readonly limit?: number;
   readonly offset?: number;
 }
-
 export interface ProductCreate {
-  readonly name: string;
-  readonly price: number;
-  readonly availability: boolean;
+  readonly name?: string;
+  readonly price?: number;
+  readonly category?: string;
+  readonly description?: string;
+  readonly availability?: boolean;
+  readonly imageUrl?: string;
 }
 
 export interface ProductUpdate {
   readonly name?: string;
   readonly price?: number;
+  readonly category?: string;
+  readonly description?: string;
   readonly availability?: boolean;
+  readonly imageUrl?: string;
 }

@@ -49,14 +49,8 @@ export class OrderController {
       validate.string(data.name, "name");
       validate.required(data.email, "email");
       validate.string(data.email, "email");
-      if (data.burger !== undefined) {
-        validate.array(data.burger, "burger");
-      }
-      if (data.drink !== undefined) {
-        validate.array(data.drink, "drink");
-      }
-      if (data.snack !== undefined) {
-        validate.array(data.snack, "snack");
+      if (data.products !== undefined) {
+        validate.array(data.products, "products");
       }
       if (data.menu !== undefined) {
         validate.array(data.menu, "menu");

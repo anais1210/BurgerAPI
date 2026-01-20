@@ -68,10 +68,7 @@ export class OrderService {
     try {
       // 3️⃣ Préparer l'objet order pour Mongoose
       const orderData = {
-        orderToken: randomUUID(), // toujours unique
-        burger: create.burger,
-        drink: create.drink,
-        snack: create.snack,
+        products: create.products,
         menu: create.menu,
         number: create.number,
         date: new Date(),
@@ -113,18 +110,14 @@ export class OrderService {
 }
 
 export interface OrderCreate {
-  orderToken: string;
-  burger?: string[];
-  drink?: string[];
-  snack?: string[];
+  products?: string[];
+  number?: number;
+  date?: Date;
+  total: number;
   menu?: string[];
+  status?: string;
   name: string;
   email: string;
-  promo?: string;
-  total: number;
-  status?: string;
-  date?: Date;
-  number?: number;
 }
 
 export interface OrderUpdate {
