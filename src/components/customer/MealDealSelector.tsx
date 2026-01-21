@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { MealDTO, ProductDTO, MealSlot, Products } from "../../types";
+import { MealDTO, ProductDTO, Products } from "../../types";
 import { useMenu } from "../../context/MenuContext";
 import Button from "../common/Button";
 
@@ -44,7 +44,7 @@ export default function MealDealSelector({
 
   // Track selected product for each slot
   const [selections, setSelections] = useState<(ProductDTO | null)[]>(
-    expandedSlots.map(() => null)
+    expandedSlots.map(() => null),
   );
 
   // Get products by category
@@ -73,7 +73,9 @@ export default function MealDealSelector({
     <div className="space-y-6">
       {/* Meal Info */}
       <div className="text-center pb-4 border-b border-gray-100">
-        <h3 className="font-heading font-bold text-xl text-dark">{meal.name}</h3>
+        <h3 className="font-heading font-bold text-xl text-dark">
+          {meal.name}
+        </h3>
         {meal.description && (
           <p className="text-gray-500 text-sm mt-1">{meal.description}</p>
         )}
@@ -96,7 +98,9 @@ export default function MealDealSelector({
                   Choose your {categoryLabels[slot.category]}
                 </span>
                 {selected && (
-                  <span className="ml-auto text-green-500 text-sm">✓ Selected</span>
+                  <span className="ml-auto text-green-500 text-sm">
+                    ✓ Selected
+                  </span>
                 )}
               </div>
 
