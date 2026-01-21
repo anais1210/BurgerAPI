@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useMenu } from "../context/MenuContext";
 import { useCart } from "../context/CartContext";
-import { Category } from "../types";
+import { Category, Products } from "../types";
 import Navbar from "../components/common/Navbar";
 import MenuCard from "../components/customer/MenuCard";
 import Cart from "../components/customer/Cart";
@@ -10,24 +10,84 @@ const categories: { id: Category; label: string; icon: string }[] = [
   { id: "all", label: "All", icon: "✨" },
   { id: "meals", label: "Meals", icon: "🍽️" },
   { id: "burgers", label: "Burgers", icon: "🍔" },
-  { id: "sides", label: "Sides", icon: "🍟" },
+  { id: "snacks", label: "Snacks", icon: "🍟" },
   { id: "drinks", label: "Drinks", icon: "🥤" },
-  // { id: "desserts", label: "Desserts", icon: "🍰" },
+  { id: "desserts", label: "Desserts", icon: "🍰" },
 ];
 
+// Map UI category to product category
+const categoryToProductType: Record<string, Products> = {
+  burgers: "burger",
+  snacks: "snack",
+  drinks: "drink",
+  desserts: "dessert",
+};
+
 export default function CustomerMenu() {
-  const { menuItems } = useMenu();
+  const { menuItems, isLoading, error } = useMenu();
   const { getCartItemCount } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [burgers, setBurgers] = useState<BurgerDTO[]>();
 
-  const filteredItems =
-    selectedCategory === "all"
-      ? menuItems
-      : menuItems.filter((item) => item.category === selectedCategory);
+  const filteredItems = useMemo(() => {
+    if (!menuItems) return [];
+
+    if (selectedCategory === "all") {
+      return [
+        ...menuItems.meals.map((meal) => ({
+          ...meal,
+          itemType: "meal" as const,
+        })),
+        ...menuItems.products.map((product) => ({
+          ...product,
+          itemType: "product" as const,
+        })),
+      ];
+    }
+
+    if (selectedCategory === "meals") {
+      return menuItems.meals.map((meal) => ({
+        ...meal,
+        itemType: "meal" as const,
+      }));
+    }
+
+    // Filter products by category (burger, snack, drink, dessert)
+    const productType = categoryToProductType[selectedCategory];
+    return menuItems.products
+      .filter((product) => product.category === productType)
+      .map((product) => ({ ...product, itemType: "product" as const }));
+  }, [menuItems, selectedCategory]);
 
   const cartItemCount = getCartItemCount();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-light">
+        <Navbar variant="customer" />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-gray-500">Loading menu...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-light">
+        <Navbar variant="customer" />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <span className="text-6xl mb-4 block">😕</span>
+            <p className="text-red-500 text-lg">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-light">

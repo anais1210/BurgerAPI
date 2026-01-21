@@ -1,32 +1,32 @@
 import * as express from "express";
-import { MenuService } from "../services";
+import { MealService } from "../services";
 import { ApiErrorCode } from "../api-error-code.enum";
 import { checkUserAccess } from "../middlewares/role.middleware";
 import { checkUserConnected } from "../middlewares";
-import { MenuModel } from "../models";
+import { MealModel } from "../models";
 import { validate, ValidationError } from "../utils/validation.utils";
 
 /**
  * Chaque controlleur aura son propre routeur à construire
  */
 
-export class MenuController {
+export class MealController {
   // -- DESIGN PATTERN SINGLETON
   //Permet d'avoir une seule instance d'une classe au maximum
-  private static instance: MenuController;
+  private static instance: MealController;
 
-  public static getInstance(): MenuController {
-    if (MenuController.instance === undefined) {
-      MenuController.instance = new MenuController();
+  public static getInstance(): MealController {
+    if (MealController.instance === undefined) {
+      MealController.instance = new MealController();
     }
-    return MenuController.instance;
+    return MealController.instance;
   }
 
   private constructor() {}
   // -------
 
-  async getAllMenus(req: express.Request, res: express.Response) {
-    const result = await MenuService.getInstance().getAllMenus();
+  async getAllMeals(req: express.Request, res: express.Response) {
+    const result = await MealService.getInstance().getAllMeals();
     if (result === null) {
       return res.status(404).end();
     }
@@ -34,9 +34,9 @@ export class MenuController {
     res.json(result);
   }
 
-  async getMenuById(req: express.Request, res: express.Response) {
+  async getMealById(req: express.Request, res: express.Response) {
     const id = req.params.id;
-    const result = await MenuService.getInstance().getMenuById(id);
+    const result = await MealService.getInstance().getMealById(id);
     if (result === ApiErrorCode.invalidParameters) {
       return res.status(400).end();
     }
@@ -46,9 +46,9 @@ export class MenuController {
     res.json(result);
   }
 
-  async getMenuIdByName(req: express.Request, res: express.Response) {
+  async getMealIdByName(req: express.Request, res: express.Response) {
     const name = req.params.name;
-    const result = await MenuService.getInstance().getMenuByName(name);
+    const result = await MealService.getInstance().getMealByName(name);
     if (result === ApiErrorCode.notFound) {
       return res.status(404).end();
     }
@@ -58,28 +58,28 @@ export class MenuController {
     res.json(result);
   }
 
-  async getMenuPrices(ids?: string[]): Promise<number> {
+  async getMealPrices(ids?: string[]): Promise<number> {
     if (!ids || ids.length === 0) return 0;
 
     // récupérer tous les burgers correspondants
-    const menus = await MenuModel.find({ _id: { $in: ids } }).select("price");
+    const Meals = await MealModel.find({ _id: { $in: ids } }).select("price");
 
     // sommer les prix
-    const total = menus.reduce((sum, b) => sum + (b.price || 0), 0);
+    const total = Meals.reduce((sum, b) => sum + (b.price || 0), 0);
     return total;
   }
 
-  async createMenu(req: express.Request, res: express.Response) {
+  async createMeal(req: express.Request, res: express.Response) {
     try {
       const data = req.body;
       validate.required(data.name, "name");
       validate.string(data.name, "name");
-      validate.required(data.burger, "burger");
-      validate.objectId(data.burger, "burger");
+      validate.required(data.slots, "slots");
+      validate.array(data.slots, "slots", { min: 1 });
       validate.required(data.price, "price");
       validate.number(data.price, "price", { min: 0 });
 
-      const result = await MenuService.getInstance().createMenu(data);
+      const result = await MealService.getInstance().createMeal(data);
       if (result === ApiErrorCode.invalidParameters) {
         return res.status(400).end();
       }
@@ -95,9 +95,9 @@ export class MenuController {
     }
   }
 
-  async deleteMenu(req: express.Request, res: express.Response) {
+  async deleteMeal(req: express.Request, res: express.Response) {
     const id = req.params.id;
-    const result = await MenuService.getInstance().deleteMenu(id);
+    const result = await MealService.getInstance().deleteMeal(id);
     if (result === ApiErrorCode.notFound) {
       return res.status(404).end();
     }
@@ -107,10 +107,10 @@ export class MenuController {
     res.status(204).end();
   }
 
-  async updateMenu(req: express.Request, res: express.Response) {
+  async updateMeal(req: express.Request, res: express.Response) {
     const id = req.params.id;
     const data = req.body;
-    const result = await MenuService.getInstance().updateMenu(id, data);
+    const result = await MealService.getInstance().updateMeal(id, data);
     if (result === ApiErrorCode.notFound) {
       return res.status(404).end();
     }
@@ -122,22 +122,22 @@ export class MenuController {
 
   buildRouter(): express.Router {
     const router = express.Router(); //création d'un nouveau routeur
-    // router.get("/", this.searchMenu.bind(this));
-    router.get("/:id", this.getMenuById.bind(this));
-    router.get("/", this.getAllMenus.bind(this));
-    router.get("/id/:name", this.getMenuIdByName.bind(this));
-    router.post("/", this.createMenu.bind(this));
+    // router.get("/", this.searchMeal.bind(this));
+    router.get("/:id", this.getMealById.bind(this));
+    router.get("/", this.getAllMeals.bind(this));
+    router.get("/id/:name", this.getMealIdByName.bind(this));
+    router.post("/", this.createMeal.bind(this));
     router.delete(
       "/:id",
       checkUserConnected(),
-      checkUserAccess(["menu-delete"]),
-      this.deleteMenu.bind(this)
+      checkUserAccess(["Meal-delete"]),
+      this.deleteMeal.bind(this),
     );
     router.patch(
       "/:id",
       checkUserConnected(),
-      checkUserAccess(["menu-update"]),
-      this.updateMenu.bind(this)
+      checkUserAccess(["Meal-update"]),
+      this.updateMeal.bind(this),
     );
     return router;
   }

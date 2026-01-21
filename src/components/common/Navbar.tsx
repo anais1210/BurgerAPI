@@ -1,13 +1,21 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 interface NavbarProps {
-  variant: 'customer' | 'restaurant';
+  variant?: 'customer' | 'restaurant';
 }
 
-export default function Navbar({ variant }: NavbarProps) {
+export default function Navbar({ variant = 'customer' }: NavbarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const isCustomer = variant === 'customer';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/restaurant/login');
+  };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-40">
@@ -43,6 +51,16 @@ export default function Navbar({ variant }: NavbarProps) {
                     : 'text-gray-600 hover:text-primary'
                 }`}
               >
+                Dashboard
+              </Link>
+              <Link
+                to="/restaurant/orders"
+                className={`font-medium transition-colors ${
+                  location.pathname === '/restaurant/orders'
+                    ? 'text-primary'
+                    : 'text-gray-600 hover:text-primary'
+                }`}
+              >
                 Orders
               </Link>
               <Link
@@ -53,8 +71,14 @@ export default function Navbar({ variant }: NavbarProps) {
                     : 'text-gray-600 hover:text-primary'
                 }`}
               >
-                Menu Management
+                Menu
               </Link>
+              <button
+                onClick={handleLogout}
+                className="font-medium text-gray-600 hover:text-red-500 transition-colors"
+              >
+                Logout
+              </button>
             </div>
           )}
         </div>

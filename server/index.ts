@@ -7,7 +7,7 @@ import mongoose from "mongoose";
 import {
   AuthController,
   ProductController,
-  MenuController,
+  MealController,
   OrderController,
 } from "./controllers";
 import { RoleService } from "./services";
@@ -18,15 +18,16 @@ async function startServer(): Promise<void> {
   const app = express();
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: ["http://localhost:3000", "http://localhost:5173"],
       credentials: true,
     }),
   );
 
   app.use(bodyParser.json());
   app.use("/product", ProductController.getInstance().buildRouter());
-  app.use("/menu", MenuController.getInstance().buildRouter());
+  app.use("/meal", MealController.getInstance().buildRouter());
   app.use("/order", OrderController.getInstance().buildRouter());
+  app.use("/user", AuthController.getInstance().buildRouter());
   app.listen(process.env.PORT, async function () {
     await bootstrap();
     console.log("Server started on port " + process.env.PORT);
@@ -36,7 +37,7 @@ async function startServer(): Promise<void> {
 async function bootstrap(): Promise<void> {
   console.log("MongoDB connected");
 
-  const resources = ["product", "menu", "order", "user"];
+  const resources = ["product", "meal", "order", "user"];
 
   // Génération CRUD
   const generateCrudPermissions = (resources: string[]) => {
@@ -59,7 +60,7 @@ async function bootstrap(): Promise<void> {
 
   // CUSTOMER
   if (!customerRole) {
-    await roleService.createRole("customer", ["product-read", "menu-read"]);
+    await roleService.createRole("customer", ["product-read", "meal-read"]);
     console.log("Customer role created");
   }
 }

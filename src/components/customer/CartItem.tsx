@@ -1,44 +1,68 @@
-import { CartItem as CartItemType } from '../../types';
-import { useCart } from '../../context/CartContext';
+import { CartItem as CartItemType } from "../../types";
+import { useCart } from "../../context/CartContext";
+
+const DEFAULT_IMAGE = "https://via.placeholder.com/64x64?text=No+Image";
 
 interface CartItemProps {
-  item: CartItemType;
+  cartItem: CartItemType;
 }
 
-export default function CartItem({ item }: CartItemProps) {
+export default function CartItem({ cartItem }: CartItemProps) {
   const { updateQuantity, removeFromCart } = useCart();
-  const { menuItem, quantity } = item;
+
+  // Handle both product and meal cart items
+  const isProduct = cartItem.type === "product";
+  const name = isProduct ? cartItem.item.name : cartItem.meal.name;
+  const price = isProduct ? cartItem.item.price : cartItem.meal.price;
+  const imageUrl = isProduct
+    ? cartItem.item.imageUrl || DEFAULT_IMAGE
+    : cartItem.meal.imageUrl || DEFAULT_IMAGE;
+  const quantity = cartItem.quantity;
 
   return (
     <div className="flex gap-3 py-3 border-b border-gray-100 last:border-0">
       <img
-        src={menuItem.image}
-        alt={menuItem.name}
+        src={imageUrl}
+        alt={name}
         className="w-16 h-16 rounded-lg object-cover"
       />
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-dark text-sm truncate">
-          {menuItem.name}
-        </h4>
+        <div className="flex items-center gap-2">
+          <h4 className="font-semibold text-dark text-sm truncate">{name}</h4>
+          {!isProduct && (
+            <span className="text-xs bg-primary text-white px-1.5 py-0.5 rounded">
+              Meal
+            </span>
+          )}
+        </div>
+
+        {/* Show selected products for meal */}
+        {!isProduct && cartItem.selectedProducts.length > 0 && (
+          <div className="text-xs text-gray-500 mt-0.5">
+            {cartItem.selectedProducts.map((p) => p.name).join(", ")}
+          </div>
+        )}
+
         <p className="text-primary font-bold text-sm">
-          ${(menuItem.price * quantity).toFixed(2)}
+          ${(price * quantity).toFixed(2)}
         </p>
         <div className="flex items-center gap-2 mt-1">
           <button
-            onClick={() => updateQuantity(menuItem.id, quantity - 1)}
+            onClick={() => updateQuantity(isProduct ? cartItem.item.id : cartItem.meal.id, quantity - 1)}
             className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-dark font-bold text-sm transition-colors"
           >
             -
           </button>
           <span className="text-sm font-medium w-6 text-center">{quantity}</span>
           <button
-            onClick={() => updateQuantity(menuItem.id, quantity + 1)}
+            onClick={() => updateQuantity(isProduct ? cartItem.item.id : cartItem.meal.id, quantity + 1)}
             className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-dark font-bold text-sm transition-colors"
           >
             +
           </button>
           <button
-            onClick={() => removeFromCart(menuItem.id)}
+            title="Remove item"
+            onClick={() => removeFromCart(isProduct ? cartItem.item.id : cartItem.meal.id)}
             className="ml-auto text-gray-400 hover:text-red-500 transition-colors"
           >
             <svg

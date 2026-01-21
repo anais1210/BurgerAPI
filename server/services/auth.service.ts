@@ -23,18 +23,18 @@ export class AuthService {
   }
 
   public async subscribeUser(
-    subcribe: UserSubscribe
+    subcribe: UserSubscribe,
   ): Promise<UserDocument | ApiErrorCode> {
     try {
       const role = await RoleService.getInstance().getByName(subcribe.roleName);
       if (!role) {
         return ApiErrorCode.notFound;
       }
-      const hashedPassword = await SecurityUtils.hashPassword(subcribe.password);
+      const hashedPassword = await SecurityUtils.hashPassword(
+        subcribe.password,
+      );
       const model = new UserModel({
         login: subcribe.login,
-        firstname: subcribe.firstname,
-        lastname: subcribe.lastname,
         password: hashedPassword,
         role,
       });
@@ -53,7 +53,7 @@ export class AuthService {
 
     const { valid, needsMigration } = await SecurityUtils.verifyPassword(
       log.password,
-      user.password
+      user.password,
     );
     if (!valid) {
       return ApiErrorCode.invalidCredentials;
@@ -79,7 +79,7 @@ export class AuthService {
   }
 
   public async getUserByToken(
-    token: string
+    token: string,
   ): Promise<UserProps | ApiErrorCode> {
     if (!Types.ObjectId.isValid(token)) {
       return ApiErrorCode.invalidParameters;
@@ -107,8 +107,6 @@ export class AuthService {
 
 export interface UserSubscribe {
   login: string;
-  firstname: string;
-  lastname: string;
   password: string;
   roleName: string;
 }

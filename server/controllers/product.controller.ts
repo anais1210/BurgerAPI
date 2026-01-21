@@ -114,17 +114,22 @@ export class ProductController {
     const router = express.Router(); //création d'un nouveau routeur
     router.get("/", this.searchProduct.bind(this));
     router.get("/:id", this.getProductById.bind(this));
-    router.post("/", this.createProduct.bind(this));
+    router.post(
+      "/",
+      checkUserConnected(),
+      checkUserAccess(["product-create"]),
+      this.createProduct.bind(this),
+    );
     router.delete(
       "/:id",
       checkUserConnected(),
-      checkUserAccess(["Product-delete"]),
+      checkUserAccess(["product-delete"]),
       this.deleteProduct.bind(this),
     );
     router.patch(
       "/:id",
       checkUserConnected(),
-      checkUserAccess(["Product-update"]),
+      checkUserAccess(["product-update"]),
       this.updateProduct.bind(this),
     );
     return router;

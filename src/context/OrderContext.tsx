@@ -1,49 +1,180 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
-import { Order, OrderStatus, CartItem } from '../types';
+import { createContext, useContext, useState, ReactNode } from "react";
+import { OrderDTO, CartItem, OrderProductItem, OrderMealItem } from "../types";
+
+const API_URL = "http://localhost:3001";
 
 interface OrderContextType {
-  orders: Order[];
-  addOrder: (customerName: string, items: CartItem[], total: number) => Order;
-  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
-  getOrdersByStatus: (status: OrderStatus) => Order[];
+  currentOrder: OrderDTO | null;
+  isLoading: boolean;
+  error: string | null;
+  createOrder: (
+    customerName: string,
+    customerEmail: string,
+    items: CartItem[],
+    total: number,
+  ) => Promise<OrderDTO | null>;
+  getOrderByNumber: (orderNumber: number) => Promise<OrderDTO | null>;
+  clearCurrentOrder: () => void;
+  getOrdersByStatus: (orderStatus: string) => Promise<OrderDTO | null>;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
 
 export function OrderProvider({ children }: { children: ReactNode }) {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [currentOrder, setCurrentOrder] = useState<OrderDTO | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const addOrder = (customerName: string, items: CartItem[], total: number): Order => {
-    const newOrder: Order = {
-      id: Date.now().toString(),
-      customerName,
-      items: [...items],
-      total,
-      status: 'received',
-      createdAt: new Date(),
-    };
-    setOrders((prev) => [newOrder, ...prev]);
-    return newOrder;
+  const createOrder = async (
+    customerName: string,
+    customerEmail: string,
+    items: CartItem[],
+    total: number,
+  ): Promise<OrderDTO | null> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Transform cart items to order format
+      const products: OrderProductItem[] = [];
+      const meals: OrderMealItem[] = [];
+
+      items.forEach((cartItem) => {
+        if (cartItem.type === "product") {
+          products.push({
+            productId: cartItem.item.id,
+            name: cartItem.item.name,
+            price: cartItem.item.price,
+            quantity: cartItem.quantity,
+          });
+        } else {
+          meals.push({
+            mealId: cartItem.meal.id,
+            name: cartItem.meal.name,
+            price: cartItem.meal.price,
+            quantity: cartItem.quantity,
+            selectedProducts: cartItem.selectedProducts.map((p) => ({
+              productId: p.id,
+              name: p.name,
+            })),
+          });
+        }
+      });
+
+      const response = await fetch(`${API_URL}/order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          customerName,
+          customerEmail,
+          products,
+          meals,
+          total,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+
+      const data = await response.json();
+      const order: OrderDTO = {
+        ...data,
+        id: data._id,
+      };
+
+      setCurrentOrder(order);
+      return order;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId ? { ...order, status } : order
-      )
-    );
+  const getOrderByNumber = async (
+    orderNumber: number,
+  ): Promise<OrderDTO | null> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/order/number/${orderNumber}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError("Order not found");
+          return null;
+        }
+        throw new Error("Failed to fetch order");
+      }
+
+      const data = await response.json();
+      const order: OrderDTO = {
+        ...data,
+        id: data._id,
+      };
+
+      setCurrentOrder(order);
+      return order;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getOrdersByStatus = (status: OrderStatus) => {
-    return orders.filter((order) => order.status === status);
+  const getOrdersByStatus = async (
+    orderStatus: string,
+  ): Promise<OrderDTO | null> => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/order/status/${orderStatus}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          setError("Order not found");
+          return null;
+        }
+        throw new Error("Failed to fetch order");
+      }
+
+      const data = await response.json();
+      const order: OrderDTO = {
+        ...data,
+        id: data._id,
+      };
+
+      setCurrentOrder(order);
+      return order;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const clearCurrentOrder = () => {
+    setCurrentOrder(null);
+    setError(null);
   };
 
   return (
     <OrderContext.Provider
       value={{
-        orders,
-        addOrder,
-        updateOrderStatus,
+        currentOrder,
+        isLoading,
+        error,
+        createOrder,
+        getOrderByNumber,
+        clearCurrentOrder,
         getOrdersByStatus,
       }}
     >
@@ -55,7 +186,7 @@ export function OrderProvider({ children }: { children: ReactNode }) {
 export function useOrders() {
   const context = useContext(OrderContext);
   if (context === undefined) {
-    throw new Error('useOrders must be used within an OrderProvider');
+    throw new Error("useOrders must be used within an OrderProvider");
   }
   return context;
 }

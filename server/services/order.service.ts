@@ -1,5 +1,10 @@
-import { OrderDocument, OrderModel } from "../models";
-import { randomUUID } from "crypto";
+import {
+  OrderDocument,
+  OrderModel,
+  OrderProductItem,
+  OrderMealItem,
+  OrderStatus,
+} from "../models";
 import { Types } from "mongoose";
 import { ApiErrorCode } from "../api-error-code.enum";
 
@@ -12,6 +17,7 @@ export class OrderService {
     }
     return OrderService.instance;
   }
+
   async getOrderById(id: string): Promise<OrderDocument | ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
@@ -22,28 +28,23 @@ export class OrderService {
     }
     return order;
   }
-  async getOrders(token?: string) {
-    if (token) {
-      // si token fourni, filtre par token
-      return await OrderModel.find({ orderToken: token })
-        .populate("burger.item")
-        .populate("drink.item")
-        .populate("snack.item")
-        .populate("menu.item.menuId")
-        .populate("menu.item.drinkMenu")
-        .populate("menu.item.snackMenu")
-        .exec();
-    } else {
-      // sinon retourne tous les orders
-      return await OrderModel.find()
-        .populate("burger.item")
-        .populate("drink.item")
-        .populate("snack.item")
-        .populate("menu.item.menuId")
-        .populate("menu.item.drinkMenu")
-        .populate("menu.item.snackMenu")
-        .exec();
+
+  async getOrderByNumber(
+    orderNumber: number,
+  ): Promise<OrderDocument | ApiErrorCode> {
+    const order = await OrderModel.findOne({ orderNumber });
+    if (order === null) {
+      return ApiErrorCode.notFound;
     }
+    return order;
+  }
+
+  async getOrders(): Promise<OrderDocument[]> {
+    return await OrderModel.find().sort({ createdAt: -1 }).exec();
+  }
+
+  async getOrdersByStatus(status: OrderStatus): Promise<OrderDocument[]> {
+    return await OrderModel.find({ status }).sort({ createdAt: -1 }).exec();
   }
 
   async updateOrder(
@@ -66,19 +67,20 @@ export class OrderService {
     create: OrderCreate,
   ): Promise<OrderDocument | ApiErrorCode> {
     try {
-      // 3️⃣ Préparer l'objet order pour Mongoose
+      // Generate order number (simple incrementing number)
+      const lastOrder = await OrderModel.findOne().sort({ orderNumber: -1 });
+      const orderNumber = lastOrder ? lastOrder.orderNumber + 1 : 1;
+
       const orderData = {
-        products: create.products,
-        menu: create.menu,
-        number: create.number,
-        date: new Date(),
+        orderNumber,
+        products: create.products || [],
+        meals: create.meals || [],
         total: create.total,
-        status: "received",
-        name: create.name,
-        email: create.email,
+        status: "received" as OrderStatus,
+        customerName: create.customerName,
+        customerEmail: create.customerEmail,
       };
 
-      // 4️⃣ Créer et sauvegarder la commande
       const order = new OrderModel(orderData);
       return await order.save();
     } catch (err) {
@@ -87,16 +89,6 @@ export class OrderService {
     }
   }
 
-  async getOrderByName(number: string): Promise<OrderDocument | ApiErrorCode> {
-    if (!Types.ObjectId.isValid(number)) {
-      return ApiErrorCode.invalidParameters;
-    }
-    const order = await OrderModel.findOne({ number });
-    if (order === null) {
-      return ApiErrorCode.notFound;
-    }
-    return order;
-  }
   async deleteOrder(id: string): Promise<ApiErrorCode> {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
@@ -110,17 +102,13 @@ export class OrderService {
 }
 
 export interface OrderCreate {
-  products?: string[];
-  number?: number;
-  date?: Date;
+  products?: OrderProductItem[];
+  meals?: OrderMealItem[];
   total: number;
-  menu?: string[];
-  status?: string;
-  name: string;
-  email: string;
+  customerName: string;
+  customerEmail: string;
 }
 
 export interface OrderUpdate {
-  readonly price?: number;
-  readonly status?: boolean;
+  readonly status?: OrderStatus;
 }

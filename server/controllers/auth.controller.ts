@@ -4,7 +4,6 @@ import { ApiErrorCode } from "../api-error-code.enum";
 import { SessionProps } from "../models";
 import { checkUserConnected } from "../middlewares/auth.middleware";
 import { validate, ValidationError } from "../utils/validation.utils";
-
 export class AuthController {
   private static instance: AuthController;
 
@@ -24,14 +23,8 @@ export class AuthController {
       validate.string(data.login, "login", { min: 3, max: 50 });
       validate.required(data.password, "password");
       validate.string(data.password, "password", { min: 6 });
-      validate.required(data.firstname, "firstname");
-      validate.string(data.firstname, "firstname");
-      validate.required(data.lastname, "lastname");
-      validate.string(data.lastname, "lastname");
 
       const result = await AuthService.getInstance().subscribeUser({
-        firstname: data.firstname,
-        lastname: data.lastname,
         login: data.login,
         password: data.password,
         roleName: data.roleName,

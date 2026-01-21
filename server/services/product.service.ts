@@ -89,8 +89,8 @@ export class ProductService {
     if (!Types.ObjectId.isValid(id)) {
       return ApiErrorCode.invalidParameters;
     }
-    const Product = await ProductModel.findByIdAndDelete(id);
-    if (Product === null) {
+    const product = await ProductModel.findByIdAndDelete(id);
+    if (product === null) {
       return ApiErrorCode.notFound;
     }
     return ApiErrorCode.success;

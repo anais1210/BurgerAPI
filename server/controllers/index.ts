@@ -1,4 +1,4 @@
 export * from "./product.controller";
 export * from "./order.controller";
-export * from "./menu.controller";
+export * from "./meal.controller";
 export * from "./auth.controller";
