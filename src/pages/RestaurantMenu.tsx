@@ -102,19 +102,19 @@ export default function RestaurantMenu() {
     );
   }
 
-  // if (error) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-50">
-  //       <Navbar variant="restaurant" />
-  //       <div className="flex items-center justify-center h-96">
-  //         <div className="text-center">
-  //           <span className="text-6xl mb-4 block">😕</span>
-  //           <p className="text-red-500 text-lg">{error}</p>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar variant="restaurant" />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <span className="text-6xl mb-4 block">😕</span>
+            <p className="text-red-500 text-lg">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!menuItems) {
     return null;
@@ -316,7 +316,7 @@ export default function RestaurantMenu() {
                             {item.slots
                               .map(
                                 (slot) =>
-                                  `${slot.quantity} ${slot.category}${slot.quantity > 1 ? "s" : ""}`
+                                  `${slot.quantity} ${slot.category}${slot.quantity > 1 ? "s" : ""}`,
                               )
                               .join(" + ")}
                           </span>
