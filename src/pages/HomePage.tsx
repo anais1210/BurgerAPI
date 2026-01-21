@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import Button from '../components/common/Button';
+import { Link } from "react-router-dom";
+import Button from "../components/common/Button";
 
 export default function HomePage() {
   return (
@@ -84,9 +84,9 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="bg-white rounded-2xl shadow-lg p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
-                <div className="text-5xl mb-3">🥤</div>
+                <div className="text-5xl mb-3">🍰</div>
                 <h3 className="font-heading font-bold text-lg text-dark">
-                  Milkshakes
+                  Desserts
                 </h3>
                 <p className="text-gray-500 text-sm mt-1">
                   Creamy and delicious
