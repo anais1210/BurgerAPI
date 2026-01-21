@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function RestaurantLogin() {
@@ -89,6 +89,13 @@ export default function RestaurantLogin() {
             >
               {isSubmitting ? 'Signing in...' : 'Sign In'}
             </button>
+
+            <Link
+              to="/"
+              className="block text-center text-gray-500 hover:text-primary transition-colors mt-4"
+            >
+              Back to Home
+            </Link>
           </form>
         </div>
       </div>
