@@ -3,8 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { OrderDTO, OrderStatus } from "../types";
 import Navbar from "../components/common/Navbar";
 import Button from "../components/common/Button";
-
-const API_URL = "http://localhost:3001";
+import { API_URL } from "../config";
 
 const statusSteps: { status: OrderStatus; label: string; icon: string }[] = [
   { status: "received", label: "Order Received", icon: "📋" },

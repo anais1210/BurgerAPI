@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { OrderDTO, CartItem, OrderProductItem, OrderMealItem } from "../types";
-
-const API_URL = "http://localhost:3001";
+import { API_URL } from "../config";
 
 interface OrderContextType {
   currentOrder: OrderDTO | null;

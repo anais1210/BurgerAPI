@@ -16,9 +16,13 @@ import express from "express";
 async function startServer(): Promise<void> {
   await mongoose.connect(process.env.MONGO_URI);
   const app = express();
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",")
+    : ["http://localhost:3000", "http://localhost:5173"];
+
   app.use(
     cors({
-      origin: ["http://localhost:3000", "http://localhost:5173"],
+      origin: allowedOrigins,
       credentials: true,
     }),
   );

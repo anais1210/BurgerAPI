@@ -6,8 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { MenuDTO, ProductDTO, MealDTO } from "../types";
-
-const API_URL = "http://localhost:3001";
+import { API_URL } from "../config";
 
 interface MenuContextType {
   menuItems: MenuDTO | null;
