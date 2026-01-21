@@ -3,5 +3,5 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: "/BurgerAPI/", // EXACTEMENT le nom du repo GitHub
+  base: process.env.NODE_ENV === "production" ? "/BurgerAPI/" : "/",
 });
