@@ -63,6 +63,10 @@ async function bootstrap(): Promise<void> {
   if (!adminRole) {
     await roleService.createRole("admin", adminPermissions);
     console.log("Admin role created");
+  } else {
+    // Update admin permissions if role already exists
+    await roleService.updateRole(adminRole._id.toString(), { accessList: adminPermissions });
+    console.log("Admin role permissions updated");
   }
 
   // CUSTOMER

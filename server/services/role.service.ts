@@ -35,4 +35,11 @@ export class RoleService {
     await role.save();
     return role;
   }
+
+  public async updateRole(
+    id: string,
+    updates: { accessList?: string[]; name?: string }
+  ): Promise<RoleDocument | null> {
+    return RoleModel.findByIdAndUpdate(id, updates, { new: true }).exec();
+  }
 }
