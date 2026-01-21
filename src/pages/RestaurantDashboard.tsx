@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { OrderDTO } from "../types";
 import Navbar from "../components/common/Navbar";
 import Button from "../components/common/Button";
-import { API_URL } from "../config";
+import { API_URL } from "../config/index";
 
 export default function RestaurantDashboard() {
   const [orders, setOrders] = useState<OrderDTO[]>([]);
@@ -18,7 +18,7 @@ export default function RestaurantDashboard() {
           data.map((order: any) => ({
             ...order,
             id: order._id,
-          }))
+          })),
         );
       }
     } catch (err) {
@@ -133,9 +133,7 @@ export default function RestaurantDashboard() {
                 <h2 className="font-heading font-bold text-xl text-dark mb-2">
                   Manage Orders
                 </h2>
-                <p className="text-gray-500">
-                  View and update order statuses
-                </p>
+                <p className="text-gray-500">View and update order statuses</p>
                 {receivedOrders.length > 0 && (
                   <span className="inline-block mt-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
                     {receivedOrders.length} new order
@@ -156,9 +154,7 @@ export default function RestaurantDashboard() {
                 <h2 className="font-heading font-bold text-xl text-dark mb-2">
                   Menu Management
                 </h2>
-                <p className="text-gray-500">
-                  Add, edit, or remove menu items
-                </p>
+                <p className="text-gray-500">Add, edit, or remove menu items</p>
               </div>
               <span className="text-4xl">🍔</span>
             </div>

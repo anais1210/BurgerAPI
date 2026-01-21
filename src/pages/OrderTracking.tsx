@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { OrderDTO, OrderStatus } from "../types";
 import Navbar from "../components/common/Navbar";
 import Button from "../components/common/Button";
-import { API_URL } from "../config";
+import { API_URL } from "../config/index";
 
 const statusSteps: { status: OrderStatus; label: string; icon: string }[] = [
   { status: "received", label: "Order Received", icon: "📋" },
@@ -126,7 +126,10 @@ export default function OrderTracking() {
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex justify-between items-center mb-8">
             {statusSteps.map((step, index) => (
-              <div key={step.status} className="flex flex-col items-center flex-1">
+              <div
+                key={step.status}
+                className="flex flex-col items-center flex-1"
+              >
                 <div
                   className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-2 transition-all ${
                     index <= currentStepIndex
@@ -153,9 +156,7 @@ export default function OrderTracking() {
               <p className="font-heading font-bold text-lg text-green-700">
                 Your order is ready!
               </p>
-              <p className="text-green-600">
-                Please pick it up at the counter
-              </p>
+              <p className="text-green-600">Please pick it up at the counter</p>
             </div>
           ) : (
             <div className="text-center p-4 bg-primary/10 rounded-xl">
@@ -186,7 +187,9 @@ export default function OrderTracking() {
                 <div>
                   <p className="font-medium text-dark">
                     {product.name}
-                    <span className="text-gray-500 ml-2">x{product.quantity}</span>
+                    <span className="text-gray-500 ml-2">
+                      x{product.quantity}
+                    </span>
                   </p>
                 </div>
                 <p className="font-semibold text-primary">

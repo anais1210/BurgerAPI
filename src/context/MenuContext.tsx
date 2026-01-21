@@ -6,7 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { MenuDTO, ProductDTO, MealDTO } from "../types";
-import { API_URL } from "../config";
+import { API_URL } from "../config/index";
 
 interface MenuContextType {
   menuItems: MenuDTO | null;

@@ -5,7 +5,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { API_URL } from "../config";
+import { API_URL } from "../config/index";
 
 interface User {
   login: string;

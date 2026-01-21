@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { OrderDTO, OrderStatus } from "../types";
 import Navbar from "../components/common/Navbar";
 import Button from "../components/common/Button";
-import { API_URL } from "../config";
+import { API_URL } from "../config/index";
 
 const statusConfig: Record<
   OrderStatus,
@@ -86,8 +86,8 @@ export default function RestaurantOrders() {
       // Update local state
       setOrders((prev) =>
         prev.map((order) =>
-          order.id === orderId ? { ...order, status: newStatus } : order
-        )
+          order.id === orderId ? { ...order, status: newStatus } : order,
+        ),
       );
     } catch (err) {
       alert("Failed to update order status");
@@ -134,9 +134,7 @@ export default function RestaurantOrders() {
             <h1 className="font-heading font-bold text-3xl text-dark">
               Orders
             </h1>
-            <p className="text-gray-500 mt-1">
-              Manage incoming orders
-            </p>
+            <p className="text-gray-500 mt-1">Manage incoming orders</p>
           </div>
           <Button variant="ghost" onClick={fetchOrders}>
             Refresh
@@ -264,7 +262,7 @@ export default function RestaurantOrders() {
                       onClick={() =>
                         updateOrderStatus(
                           order.id,
-                          statusConfig[order.status].nextStatus!
+                          statusConfig[order.status].nextStatus!,
                         )
                       }
                     >
