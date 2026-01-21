@@ -130,13 +130,13 @@ export class MealController {
     router.delete(
       "/:id",
       checkUserConnected(),
-      checkUserAccess(["Meal-delete"]),
+      checkUserAccess(["meal-delete"]),
       this.deleteMeal.bind(this),
     );
     router.patch(
       "/:id",
       checkUserConnected(),
-      checkUserAccess(["Meal-update"]),
+      checkUserAccess(["meal-update"]),
       this.updateMeal.bind(this),
     );
     return router;
