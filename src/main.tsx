@@ -8,9 +8,11 @@ import { MenuProvider } from './context/MenuContext'
 import { CartProvider } from './context/CartContext'
 import { OrderProvider } from './context/OrderContext'
 
+const basename = import.meta.env.PROD ? '/BurgerAPI' : '/'
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AuthProvider>
         <MenuProvider>
           <CartProvider>
