@@ -93,8 +93,9 @@ export function MenuProvider({ children }: { children: ReactNode }) {
       }
 
       const newItem = await response.json();
+      const mappedItem = { ...newItem, id: newItem._id };
       setMenuItems((prev) =>
-        prev ? { ...prev, products: [...prev.products, newItem] } : null,
+        prev ? { ...prev, products: [...prev.products, mappedItem] } : null,
       );
       return true;
     } catch (err) {
@@ -124,12 +125,13 @@ export function MenuProvider({ children }: { children: ReactNode }) {
       }
 
       const updatedItem = await response.json();
+      const mappedItem = { ...updatedItem, id: updatedItem._id };
       setMenuItems((prev) =>
         prev
           ? {
               ...prev,
               products: prev.products.map((item) =>
-                item.id === id ? updatedItem : item,
+                item.id === id ? mappedItem : item,
               ),
             }
           : null,
@@ -190,8 +192,9 @@ export function MenuProvider({ children }: { children: ReactNode }) {
       }
 
       const newItem = await response.json();
+      const mappedItem = { ...newItem, id: newItem._id };
       setMenuItems((prev) =>
-        prev ? { ...prev, meals: [...prev.meals, newItem] } : null,
+        prev ? { ...prev, meals: [...prev.meals, mappedItem] } : null,
       );
       return true;
     } catch (err) {
@@ -221,12 +224,13 @@ export function MenuProvider({ children }: { children: ReactNode }) {
       }
 
       const updatedItem = await response.json();
+      const mappedItem = { ...updatedItem, id: updatedItem._id };
       setMenuItems((prev) =>
         prev
           ? {
               ...prev,
               meals: prev.meals.map((item) =>
-                item.id === id ? updatedItem : item,
+                item.id === id ? mappedItem : item,
               ),
             }
           : null,
